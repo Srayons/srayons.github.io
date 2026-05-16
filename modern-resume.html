@@ -1,0 +1,396 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRayons - 个人简历</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .container {
+        grid-template-columns: 1fr;
+        max-width: 800px;
+      }
+    }
+
+    .panel {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      padding: 25px;
+      height: fit-content;
+    }
+
+    .resume-container {
+      background: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
+    }
+
+    .chat-container {
+      background: linear-gradient(to bottom right, #fff, #f8f9ff);
+    }
+
+    .interview-container {
+      background: linear-gradient(to bottom right, #f0f2f5, #e4e6eb);
+    }
+
+    h1, h2 {
+      color: #2d3748;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 1.8em;
+    }
+
+    h2 {
+      font-size: 1.4em;
+    }
+
+    .resume-section {
+      margin-bottom: 20px;
+    }
+
+    .resume-section h3 {
+      color: #4a5568;
+      margin: 15px 0 10px;
+      font-size: 1.1em;
+    }
+
+    .resume-section ul {
+      padding-left: 20px;
+      margin-bottom: 15px;
+    }
+
+    .resume-section li {
+      margin-bottom: 8px;
+    }
+
+    .contact-info p {
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+    }
+
+    .contact-info strong {
+      width: 60px;
+      display: inline-block;
+    }
+
+    /* 聊天界面样式 */
+    #chat-box {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      border-radius: 18px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    .user-message {
+      background: #667eea;
+      color: white;
+      margin-left: auto;
+      border-bottom-right-radius: 5px;
+    }
+
+    .bot-message {
+      background: #e2e8f0;
+      color: #2d3748;
+      margin-right: auto;
+      border-bottom-left-radius: 5px;
+    }
+
+    #chat-input {
+      width: calc(100% - 70px);
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 25px;
+      margin-right: 10px;
+      font-size: 1em;
+    }
+
+    .send-btn {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+    }
+
+    .send-btn:hover {
+      background: #5a67d8;
+    }
+
+    /* 面试模拟样式 */
+    #interview-question {
+      background: #f0f4f8;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border-left: 4px solid #48bb78;
+    }
+
+    #interview-answer {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 1em;
+    }
+
+    .feedback {
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .correct {
+      background: #c6f6d5;
+      color: #2f855a;
+    }
+
+    .incorrect {
+      background: #fed7d7;
+      color: #c53030;
+    }
+
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .skill-tag {
+      background: #667eea;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8em;
+    }
+
+    .work-item, .education-item {
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px dashed #cbd5e0;
+    }
+
+    .work-item:last-child, .education-item:last-child {
+      border-bottom: none;
+    }
+
+    .date {
+      color: #718096;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 个人简历面板 -->
+    <div class="panel resume-container">
+      <h1>个人简历</h1>
+      
+      <div class="resume-section contact-info">
+        <h3>基本信息</h3>
+        <p><strong>姓名:</strong> SRayons</p>
+        <p><strong>职位:</strong> 初级前后端开发兼运维</p>
+        <p><strong>联系:</strong> srayons.github.io</p>
+        <p><strong>电话:</strong> 132-0000-0000</p>
+        <p><strong>位置:</strong> 中国, 石家庄、邯郸</p>
+      </div>
+
+      <div class="resume-section">
+        <h3>专业技能</h3>
+        <div class="skills">
+          <span class="skill-tag">Vue.js</span>
+          <span class="skill-tag">Java</span>
+          <span class="skill-tag">Spring Boot</span>
+          <span class="skill-tag">MySQL</span>
+        </div>
+      </div>
+
+      <div class="resume-section">
+        <h3>工作经验</h3>
+        <div class="work-item">
+          <p><strong>初级前后端开发兼运维 | 某公司</strong></p>
+          <p class="date">2022年6月 - 至今</p>
+          <p>负责前后端开发及系统运维工作</p>
+        </div>
+        <div class="work-item">
+          <p><strong>实习生 | 某科技</strong></p>
+          <p class="date">2021年7月 - 2022年5月</p>
+          <p>参与基础开发工作</p>
+        </div>
+      </div>
+
+      <div class="resume-section">
+        <h3>教育背景</h3>
+        <div class="education-item">
+          <p><strong>计算机网络技术 - 学士</strong></p>
+          <p class="date">某大学 | 2018 - 2024</p>
+        </div>
+      </div>
+
+      <div class="resume-section">
+        <h3>项目经验</h3>
+        <ul>
+          <li>企业级聊天系统 - 基于WebSocket的实时通讯平台</li>
+          <li>AI对话助手 - 集成多种AI模型的智能对话系统</li>
+          <li>电商平台后台 - 高并发电商系统后台管理</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 聊天对话面板 -->
+    <div class="panel chat-container">
+      <h2>聊天对话</h2>
+      <div id="chat-box">
+        <div class="message bot-message">
+          你好！我是SRayons的AI助手，有什么可以帮助你的吗？
+        </div>
+      </div>
+      <div style="display: flex;">
+        <input type="text" id="chat-input" placeholder="输入你的问题..." onkeypress="handleKeyPress(event)">
+        <button class="send-btn" onclick="sendQuestion()">发送</button>
+      </div>
+    </div>
+
+    <!-- 面试模拟面板 -->
+    <div class="panel interview-container">
+      <h2>面试模拟</h2>
+      <div id="interview-question">
+        请简单介绍一下你自己以及你的技术背景。
+      </div>
+      <input type="text" id="interview-answer" placeholder="你的回答..." onkeypress="handleInterviewKeyPress(event)">
+      <button class="send-btn" onclick="checkAnswer()">提交答案</button>
+      <div id="feedback"></div>
+    </div>
+  </div>
+
+  <script>
+    // 聊天功能
+    function sendQuestion() {
+      const input = document.getElementById('chat-input');
+      const chatBox = document.getElementById('chat-box');
+
+      if (input.value.trim()) {
+        // 添加用户消息
+        const userMessage = document.createElement('div');
+        userMessage.classList.add('message', 'user-message');
+        userMessage.textContent = input.value;
+        chatBox.appendChild(userMessage);
+
+        // 清空输入框
+        input.value = '';
+
+        // 滚动到底部
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        // 模拟AI回复
+        setTimeout(() => {
+          const aiResponses = [
+            '这是一个很好的问题！',
+            '根据我的经验，...',
+            '这取决于具体情况，但通常...',
+            '我建议采用最佳实践...',
+            '这是一个复杂的问题，让我详细解释...',
+            '我曾经在项目中遇到过类似情况...',
+            '这是当前行业的标准做法...'
+          ];
+          
+          const aiMessage = document.createElement('div');
+          aiMessage.classList.add('message', 'bot-message');
+          aiMessage.textContent = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+          chatBox.appendChild(aiMessage);
+          
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }, 500);
+      }
+    }
+
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') {
+        sendQuestion();
+      }
+    }
+
+    // 面试模拟功能
+    const interviewQuestions = [
+      '请简单介绍一下你自己以及你的技术背景。',
+      '你在项目中遇到的最大挑战是什么？如何解决的？',
+      '你如何保证代码质量？',
+      '谈谈你对微服务架构的理解。',
+      '你是如何进行性能优化的？',
+      '请描述一次你解决复杂技术问题的经历。',
+      '你如何学习新技术？',
+      '谈谈你对前端工程化的理解。'
+    ];
+
+    let currentQuestionIndex = 0;
+
+    function checkAnswer() {
+      const answerInput = document.getElementById('interview-answer');
+      const feedbackDiv = document.getElementById('feedback');
+      
+      if (answerInput.value.trim()) {
+        // 显示反馈
+        feedbackDiv.innerHTML = '<div class="feedback correct">回答已提交！评估中...</div>';
+        
+        // 5秒后显示下一个问题
+        setTimeout(() => {
+          currentQuestionIndex = (currentQuestionIndex + 1) % interviewQuestions.length;
+          document.getElementById('interview-question').textContent = interviewQuestions[currentQuestionIndex];
+          answerInput.value = '';
+          feedbackDiv.innerHTML = '';
+        }, 2000);
+      }
+    }
+
+    function handleInterviewKeyPress(event) {
+      if (event.key === 'Enter') {
+        checkAnswer();
+      }
+    }
+
+    // 页面加载时设置第一个面试问题
+    document.getElementById('interview-question').textContent = interviewQuestions[currentQuestionIndex];
+  </script>
+</body>
+</html>
