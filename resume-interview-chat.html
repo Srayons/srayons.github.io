@@ -1,447 +1,249 @@
 ﻿<!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>个人简历 - 聊天对话 - 面试模拟</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 20px;
-    }
-
-    @media (max-width: 1024px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .card {
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-    }
-
-    .card-header {
-      background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .card-body {
-      padding: 25px;
-    }
-
-    /* Resume Styles */
-    .resume-container .card-body {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .profile-section {
-      text-align: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #eee;
-      margin-bottom: 20px;
-    }
-
-    .profile-img {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: #718096;
-      margin: 0 auto 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 50px;
-    }
-
-    .section {
-      margin-bottom: 20px;
-    }
-
-    .section-title {
-      font-size: 1.2em;
-      color: #4a5568;
-      border-bottom: 2px solid #667eea;
-      padding-bottom: 5px;
-      margin-bottom: 10px;
-    }
-
-    .info-item {
-      margin-bottom: 8px;
-      padding-left: 15px;
-    }
-
-    .skill-tag {
-      display: inline-block;
-      background: #e2e8f0;
-      color: #4a5568;
-      padding: 3px 10px;
-      border-radius: 15px;
-      font-size: 0.8em;
-      margin: 3px;
-    }
-
-    /* Chat Styles */
-    .chat-container .card-body {
-      display: flex;
-      flex-direction: column;
-      height: 500px;
-    }
-
-    #chat-box {
-      flex: 1;
-      overflow-y: auto;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 15px;
-      background: #f7fafc;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .message {
-      max-width: 80%;
-      padding: 10px 15px;
-      border-radius: 18px;
-      word-wrap: break-word;
-    }
-
-    .user-message {
-      background: #667eea;
-      color: white;
-      align-self: flex-end;
-      border-bottom-right-radius: 5px;
-    }
-
-    .bot-message {
-      background: #e2e8f0;
-      align-self: flex-start;
-      border-bottom-left-radius: 5px;
-    }
-
-    .chat-input-area {
-      display: flex;
-      gap: 10px;
-    }
-
-    #chat-input {
-      flex: 1;
-      padding: 12px;
-      border: 1px solid #cbd5e0;
-      border-radius: 25px;
-      outline: none;
-    }
-
-    #send-btn {
-      padding: 12px 20px;
-      background: #667eea;
-      color: white;
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-    }
-
-    #send-btn:hover {
-      background: #5a67d8;
-    }
-
-    /* Interview Styles */
-    .interview-container .card-body {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    #interview-question {
-      background: #f7fafc;
-      padding: 15px;
-      border-radius: 8px;
-      border-left: 4px solid #667eea;
-      min-height: 80px;
-      display: flex;
-      align-items: center;
-    }
-
-    #interview-answer {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #cbd5e0;
-      border-radius: 8px;
-      resize: vertical;
-      min-height: 100px;
-    }
-
-    .interview-btns {
-      display: flex;
-      gap: 10px;
-    }
-
-    .interview-btn {
-      flex: 1;
-      padding: 12px;
-      background: #667eea;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .interview-btn:hover {
-      background: #5a67d8;
-    }
-
-    .feedback {
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 10px;
-      text-align: center;
-    }
-
-    .success {
-      background: #c6f6d5;
-      color: #2f855a;
-    }
-
-    .error {
-      background: #fed7d7;
-      color: #c53030;
-    }
-
-    h1 {
-      text-align: center;
-      color: white;
-      margin-bottom: 20px;
-      font-size: 2.5em;
-    }
-  </style>
+    <title>Srayons 的聊天室</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        #chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        #chat-header {
+            text-align: center;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        #username-section {
+            margin-bottom: 20px;
+        }
+        #message-section {
+            margin-top: 20px;
+        }
+        #message-form {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        #message-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #send-button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #send-button:disabled {
+            background-color: #cccccc;
+        }
+        #messages {
+            height: 400px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .chat-message {
+            background-color: #e3f2fd;
+        }
+        .join-message {
+            background-color: #e8f5e8;
+            color: green;
+            text-align: center;
+        }
+        .leave-message {
+            background-color: #ffebee;
+            color: red;
+            text-align: center;
+        }
+        .error-message {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .connected {
+            color: green;
+        }
+        .disconnected {
+            color: red;
+        }
+    </style>
 </head>
 <body>
-  <h1>个人简历 & 面试助手</h1>
-  
-  <div class="container">
-    <!-- Resume Section -->
-    <div class="card resume-container">
-      <div class="card-header">
-        <h2>个人简历</h2>
-      </div>
-      <div class="card-body">
-        <div class="profile-section">
-          <div class="profile-img">👨‍💻</div>
-          <h3>Srayons</h3>
-          <p>前端开发工程师</p>
+    <div id="chat-container">
+        <div id="chat-header">
+            <h2>AI Srayons 聊天室</h2>
+            <p>状态: <span id="connection-status" class="disconnected">未连接</span></p>
         </div>
         
-        <div class="contact-info section">
-          <h4 class="section-title">联系方式</h4>
-          <div class="info-item">📧 srayons@163.com</div>
-          <div class="info-item">📱 132-456-7890</div>
-          <div class="info-item">🌐 github.com/srayons</div>
-          <div class="info-item">💼 gitee.com/srayons</div>
+        <div id="username-section">
+            <input type="text" id="username-input" placeholder="输入您的用户名" />
+            <button id="connect-button" onclick="connect()">连接</button>
+            <button id="disconnect-button" onclick="disconnect()" disabled>断开连接</button>
         </div>
         
-        <div class="education section">
-          <h4 class="section-title">教育背景</h4>
-          <div class="info-item">计算机网络技术, 某某学院, 2021-2024</div>
+        <div id="message-section">
+            <div id="messages"></div>
+            
+            <form id="message-form">
+                <input type="text" id="message-input" placeholder="输入消息..." disabled />
+                <button id="send-button" type="submit" disabled>发送</button>
+            </form>
         </div>
-        
-        <div class="work section">
-          <h4 class="section-title">工作经历</h4>
-          <div class="info-item">前端开发工程师, ABC公司, 2024-至今</div>
-        </div>
-        
-        <div class="skills section">
-          <h4 class="section-title">技能</h4>
-          <div class="info-item">
-            <span class="skill-tag">JavaScript</span>
-            <span class="skill-tag">HTML/CSS</span>
-            <span class="skill-tag">JAVA</span>
-            <span class="skill-tag">Vue.js</span>
-            <span class="skill-tag">MySQL</span>
-            <span class="skill-tag">Maven</span>
-            <span class="skill-tag">Git</span>
-          </div>
-        </div>
-      </div>
     </div>
-    
-    <!-- Chat Section -->
-    <div class="card chat-container">
-      <div class="card-header">
-        <h2>聊天对话</h2>
-      </div>
-      <div class="card-body">
-        <div id="chat-box">
-          <div class="message bot-message">
-            你好！我是AI助手，有什么可以帮助你的吗？
-          </div>
-        </div>
-        <div class="chat-input-area">
-          <input type="text" id="chat-input" placeholder="输入你的问题...">
-          <button id="send-btn">发送</button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Interview Section -->
-    <div class="card interview-container">
-      <div class="card-header">
-        <h2>面试模拟</h2>
-      </div>
-      <div class="card-body">
-        <div id="interview-question">
-          请简单介绍一下你自己以及你的工作经验。
-        </div>
-        <textarea id="interview-answer" placeholder="在这里输入你的回答..."></textarea>
-        <div class="interview-btns">
-          <button class="interview-btn" id="submit-btn">提交答案</button>
-          <button class="interview-btn" id="next-question">下一题</button>
-        </div>
-        <div id="feedback" class="feedback" style="display: none;"></div>
-      </div>
-    </div>
-  </div>
 
-  <script>
-    // Chat functionality
-    const chatInput = document.getElementById('chat-input');
-    const chatBox = document.getElementById('chat-box');
-    const sendBtn = document.getElementById('send-btn');
+    <!-- 引入SockJS和STOMP客户端 -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     
-    // Sample responses for the chatbot
-    const responses = [
-      '这是一个很好的问题！',
-      '根据我的经验，我认为...',
-      '这取决于具体情况，但通常...',
-      '我建议您考虑以下几个方面...',
-      '这是一个复杂的问题，让我详细解释...'
-    ];
-    
-    function addMessage(text, isUser = false) {
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('message');
-      messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
-      messageDiv.textContent = text;
-      chatBox.appendChild(messageDiv);
-      
-      // Scroll to bottom
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-    
-    function sendMessage() {
-      const message = chatInput.value.trim();
-      if (message) {
-        addMessage(message, true);
-        chatInput.value = '';
-        
-        // Simulate AI response after a delay
-        setTimeout(() => {
-          const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-          addMessage(randomResponse);
-        }, 1000);
-      }
-    }
-    
-    sendBtn.addEventListener('click', sendMessage);
-    chatInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        sendMessage();
-      }
-    });
-    
-    // Interview functionality
-    const interviewQuestion = document.getElementById('interview-question');
-    const interviewAnswer = document.getElementById('interview-answer');
-    const submitBtn = document.getElementById('submit-btn');
-    const nextQuestionBtn = document.getElementById('next-question');
-    const feedbackDiv = document.getElementById('feedback');
-    
-    // Sample interview questions
-    const questions = [
-      '请简单介绍一下你自己以及你的工作经验。',
-      '你为什么想要这份工作？',
-      '你最大的优势是什么？',
-      '你最大的劣势是什么？',
-      '你在过去的工作中遇到的最大挑战是什么？',
-      '你是如何解决冲突的？',
-      '你对未来五年的职业规划是什么？',
-      '你期望的薪资是多少？',
-      '你还有什么问题想问我们的吗？'
-    ];
-    
-    let currentQuestionIndex = 0;
-    
-    function updateQuestion(index) {
-      if (index >= questions.length) {
-        currentQuestionIndex = 0;
-      }
-      interviewQuestion.textContent = questions[currentQuestionIndex];
-      interviewAnswer.value = '';
-      feedbackDiv.style.display = 'none';
-    }
-    
-    function submitAnswer() {
-      const answer = interviewAnswer.value.trim();
-      if (!answer) {
-        feedbackDiv.textContent = '请输入您的答案';
-        feedbackDiv.className = 'feedback error';
-        feedbackDiv.style.display = 'block';
-        return;
-      }
-      
-      // Simple feedback logic (in a real app, this would be more sophisticated)
-      const positiveFeedback = [
-        '很好的回答！',
-        '这个观点很有见地。',
-        '你的经验很丰富。',
-        '听起来你很有想法。',
-        '这是个不错的思路。'
-      ];
-      
-      const randomFeedback = positiveFeedback[Math.floor(Math.random() * positiveFeedback.length)];
-      feedbackDiv.textContent = randomFeedback;
-      feedbackDiv.className = 'feedback success';
-      feedbackDiv.style.display = 'block';
-    }
-    
-    nextQuestionBtn.addEventListener('click', () => {
-      currentQuestionIndex++;
-      updateQuestion(currentQuestionIndex);
-    });
-    
-    submitBtn.addEventListener('click', submitAnswer);
-    
-    // Initialize first question
-    updateQuestion(0);
-  </script>
+    <script>
+        var stompClient = null;
+        var connected = false;
+
+        // 发送连接
+        function setConnected(connected) {
+            document.getElementById('connect-button').disabled = connected;
+            document.getElementById('disconnect-button').disabled = !connected;
+            document.getElementById('username-input').disabled = connected;
+            document.getElementById('message-input').disabled = !connected;
+            document.getElementById('send-button').disabled = !connected;
+            
+            // 检测连接状态
+            if (connected) {
+                document.getElementById('connection-status').textContent = '已连接';
+                document.getElementById('connection-status').className = 'connected';
+            } else {
+                document.getElementById('connection-status').textContent = '未连接';
+                document.getElementById('connection-status').className = 'disconnected';
+            }
+        }
+
+        function connect() {
+            var username = document.getElementById('username-input').value.trim();
+            
+            if (username === '') {
+                alert('请输入用户名');
+                return;
+            }
+            
+            var socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+            
+            stompClient.connect({}, function(frame) {
+                console.log('Connected: ' + frame);
+                connected = true;
+                setConnected(true);
+                
+                // 发送注册消息
+                stompClient.send("/app/chat.register", {}, JSON.stringify({
+                    'from': username,
+                    'type': 'JOIN'
+                }));
+                
+                // 订阅公共聊天主题
+                stompClient.subscribe('/topic/public', function(messageOutput) {
+                    showMessage(JSON.parse(messageOutput.body));
+                });
+            });
+        }
+
+        // 断开连接
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+            }
+            connected = false;
+            setConnected(false);
+            console.log("Disconnected");
+        }
+
+        function sendMessage() {
+            var messageInput = document.getElementById('message-input');
+            var message = messageInput.value.trim();
+            
+            if (message === '') {
+                return;
+            }
+            
+            var username = document.getElementById('username-input').value.trim();
+            
+            stompClient.send("/app/chat.send", {}, JSON.stringify({
+                'from': username,
+                'text': message,
+                'type': 'CHAT'
+            }));
+            
+            messageInput.value = '';
+        }
+
+        // 显示消息
+        function showMessage(message) {
+            var messagesDiv = document.getElementById('messages');
+            var messageElement = document.createElement('div');
+            
+            var className = 'message ';
+            var text = '';
+            // 状态：加入、离开、聊天
+            switch(message.type) {
+                case 'JOIN':
+                    className += 'join-message';
+                    text = message.from + ' 加入了聊天室';
+                    break;
+                case 'LEAVE':
+                    className += 'leave-message';
+                    text = message.from + ' 离开了聊天室';
+                    break;
+                case 'CHAT':
+                    className += 'chat-message';
+                    text = '<strong>' + message.from + ':</strong> ' + message.text;
+                    if (message.time) {
+                        text += ' <small>(' + message.time + ')</small>';
+                    }
+                    break;
+                default:
+                    className += 'message';
+                    text = message.text;
+            }
+            
+            messageElement.className = className;
+            messageElement.innerHTML = text;
+            messagesDiv.appendChild(messageElement);
+            
+            // 自动滚动到底部
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // 表单提交事件监听
+        document.getElementById('message-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            if (connected) {
+                sendMessage();
+            }
+        });
+    </script>
 </body>
 </html>

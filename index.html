@@ -1,162 +1,249 @@
 ﻿<!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SRayons - 作品集主页</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 800px;
-      width: 100%;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-      overflow: hidden;
-      text-align: center;
-    }
-
-    .hero {
-      padding: 60px 40px;
-      background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
-      color: white;
-    }
-
-    .hero h1 {
-      font-size: 3em;
-      margin-bottom: 20px;
-      font-weight: 300;
-    }
-
-    .hero p {
-      font-size: 1.2em;
-      opacity: 0.9;
-      margin-bottom: 30px;
-    }
-
-    .nav-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin-top: 30px;
-    }
-
-    .nav-button {
-      display: inline-block;
-      padding: 12px 20px;
-      background: rgba(255,255,255,0.1);
-      color: white;
-      text-decoration: none;
-      border-radius: 50px;
-      transition: all 0.3s ease;
-      border: 1px solid rgba(255,255,255,0.2);
-      font-size: 0.9em;
-    }
-
-    .nav-button:hover {
-      background: rgba(255,255,255,0.2);
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-
-    .content {
-      padding: 40px;
-    }
-
-    .projects {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-top: 30px;
-    }
-
-    .project-card {
-      background: #f7fafc;
-      padding: 25px;
-      border-radius: 10px;
-      border: 1px solid #e2e8f0;
-      transition: transform 0.3s ease;
-    }
-
-    .project-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-
-    .project-card h3 {
-      color: #4a5568;
-      margin-bottom: 10px;
-    }
-
-    .project-card p {
-      color: #718096;
-      font-size: 0.95em;
-    }
-
-    .footer {
-      background: #4a5568;
-      color: white;
-      text-align: center;
-      padding: 20px;
-      font-size: 0.9em;
-    }
-  </style>
+    <title>Srayons 聊天室</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        #chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        #chat-header {
+            text-align: center;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        #username-section {
+            margin-bottom: 20px;
+        }
+        #message-section {
+            margin-top: 20px;
+        }
+        #message-form {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        #message-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #send-button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #send-button:disabled {
+            background-color: #cccccc;
+        }
+        #messages {
+            height: 400px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .chat-message {
+            background-color: #e3f2fd;
+        }
+        .join-message {
+            background-color: #e8f5e8;
+            color: green;
+            text-align: center;
+        }
+        .leave-message {
+            background-color: #ffebee;
+            color: red;
+            text-align: center;
+        }
+        .error-message {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .connected {
+            color: green;
+        }
+        .disconnected {
+            color: red;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="hero">
-      <h1>SRayons</h1>
-      <p>初级前后端开发兼运维 | 技术爱好者 | 持续学习者</p>
-      <div class="nav-buttons">
-        <a href="./resume.html" class="nav-button">📄 标准简历</a>
-        <a href="./modern-resume.html" class="nav-button">🌟 现代简历</a>
-        <a href="./frontend-framework-demo/vue-demo.html" class="nav-button">⚛️ Vue框架演示</a>
-        <a href="./chat/" class="nav-button">💬 聊天应用</a>
-        <a href="./chat/websocket-chat/" class="nav-button">📡 WebSocket聊天室</a>
-      </div>
+    <div id="chat-container">
+        <div id="chat-header">
+            <h2>AI Srayons 聊天室</h2>
+            <p>状态: <span id="connection-status" class="disconnected">未连接</span></p>
+        </div>
+        
+        <div id="username-section">
+            <input type="text" id="username-input" placeholder="输入您的用户名" />
+            <button id="connect-button" onclick="connect()">连接</button>
+            <button id="disconnect-button" onclick="disconnect()" disabled>断开连接</button>
+        </div>
+        
+        <div id="message-section">
+            <div id="messages"></div>
+            
+            <form id="message-form">
+                <input type="text" id="message-input" placeholder="输入消息..." disabled />
+                <button id="send-button" type="submit" disabled>发送</button>
+            </form>
+        </div>
     </div>
 
-    <div class="content">
-      <h2>欢迎来到我的技术作品集</h2>
-      <p>这里展示了我的技术项目和专业技能</p>
+    <!-- 引入SockJS和STOMP客户端 -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    
+    <script>
+        var stompClient = null;
+        var connected = false;
 
-      <div class="projects">
-        <div class="project-card">
-          <h3>AI对话助手</h3>
-          <p>基于Vue3和Vite构建的智能对话系统，集成多种AI模型</p>
-        </div>
-        <div class="project-card">
-          <h3>WebSocket聊天室</h3>
-          <p>实时多人聊天应用，支持高并发连接和消息广播</p>
-        </div>
-        <div class="project-card">
-          <h3>现代Web应用</h3>
-          <p>使用最新前端技术栈构建的高性能Web应用程序</p>
-        </div>
-      </div>
-    </div>
+        // 发送连接
+        function setConnected(connected) {
+            document.getElementById('connect-button').disabled = connected;
+            document.getElementById('disconnect-button').disabled = !connected;
+            document.getElementById('username-input').disabled = connected;
+            document.getElementById('message-input').disabled = !connected;
+            document.getElementById('send-button').disabled = !connected;
+            
+            // 检测连接状态
+            if (connected) {
+                document.getElementById('connection-status').textContent = '已连接';
+                document.getElementById('connection-status').className = 'connected';
+            } else {
+                document.getElementById('connection-status').textContent = '未连接';
+                document.getElementById('connection-status').className = 'disconnected';
+            }
+        }
 
-    <div class="footer">
-      <p>&copy; 2023 SRayons. 版权所有</p>
-    </div>
-  </div>
+        function connect() {
+            var username = document.getElementById('username-input').value.trim();
+            
+            if (username === '') {
+                alert('请输入用户名');
+                return;
+            }
+            
+            var socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+            
+            stompClient.connect({}, function(frame) {
+                console.log('Connected: ' + frame);
+                connected = true;
+                setConnected(true);
+                
+                // 发送注册消息
+                stompClient.send("/app/chat.register", {}, JSON.stringify({
+                    'from': username,
+                    'type': 'JOIN'
+                }));
+                
+                // 订阅公共聊天主题
+                stompClient.subscribe('/topic/public', function(messageOutput) {
+                    showMessage(JSON.parse(messageOutput.body));
+                });
+            });
+        }
+
+        // 断开连接
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+            }
+            connected = false;
+            setConnected(false);
+            console.log("Disconnected");
+        }
+
+        function sendMessage() {
+            var messageInput = document.getElementById('message-input');
+            var message = messageInput.value.trim();
+            
+            if (message === '') {
+                return;
+            }
+            
+            var username = document.getElementById('username-input').value.trim();
+            
+            stompClient.send("/app/chat.send", {}, JSON.stringify({
+                'from': username,
+                'text': message,
+                'type': 'CHAT'
+            }));
+            
+            messageInput.value = '';
+        }
+
+        // 显示消息
+        function showMessage(message) {
+            var messagesDiv = document.getElementById('messages');
+            var messageElement = document.createElement('div');
+            
+            var className = 'message ';
+            var text = '';
+            // 状态：加入、离开、聊天
+            switch(message.type) {
+                case 'JOIN':
+                    className += 'join-message';
+                    text = message.from + ' 加入了聊天室';
+                    break;
+                case 'LEAVE':
+                    className += 'leave-message';
+                    text = message.from + ' 离开了聊天室';
+                    break;
+                case 'CHAT':
+                    className += 'chat-message';
+                    text = '<strong>' + message.from + ':</strong> ' + message.text;
+                    if (message.time) {
+                        text += ' <small>(' + message.time + ')</small>';
+                    }
+                    break;
+                default:
+                    className += 'message';
+                    text = message.text;
+            }
+            
+            messageElement.className = className;
+            messageElement.innerHTML = text;
+            messagesDiv.appendChild(messageElement);
+            
+            // 自动滚动到底部
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // 表单提交事件监听
+        document.getElementById('message-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            if (connected) {
+                sendMessage();
+            }
+        });
+    </script>
 </body>
 </html>
