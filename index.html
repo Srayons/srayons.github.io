@@ -1,249 +1,1688 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-    <title>Srayons 聊天室</title>
-    <meta charset="utf-8">
-    <style>
-        body {
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        #chat-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            padding: 20px;
-        }
-        #chat-header {
-            text-align: center;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        #username-section {
-            margin-bottom: 20px;
-        }
-        #message-section {
-            margin-top: 20px;
-        }
-        #message-form {
-            display: flex;
-            margin-bottom: 10px;
-        }
-        #message-input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        #send-button {
-            margin-left: 10px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        #send-button:disabled {
-            background-color: #cccccc;
-        }
-        #messages {
-            height: 400px;
-            overflow-y: scroll;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 4px;
-            background-color: #fafafa;
-        }
-        .message {
-            margin-bottom: 10px;
-            padding: 5px;
-            border-radius: 3px;
-        }
-        .chat-message {
-            background-color: #e3f2fd;
-        }
-        .join-message {
-            background-color: #e8f5e8;
-            color: green;
-            text-align: center;
-        }
-        .leave-message {
-            background-color: #ffebee;
-            color: red;
-            text-align: center;
-        }
-        .error-message {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        .connected {
-            color: green;
-        }
-        .disconnected {
-            color: red;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>赫尔鲆</title>
+  <!-- CSS inlined -->
+<style>
+/* Inlined CSS */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f0f2f5;
+  color: #333;
+  min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== 布局容器 ===== */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  background: #f0f2f5;
+  position: relative;
+}
+
+.top-bar {
+  background: linear-gradient(135deg, #1677ff, #0958d9);
+  color: #fff;
+  padding: 16px 20px;
+  flex-shrink: 0;
+}
+
+.top-bar h1 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  padding-bottom: 80px; /* 给底部导航留空间 */
+}
+
+/* ===== Tab 标题栏 ===== */
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* ===== 订单卡片 ===== */
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.order-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.order-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #1a1a1a;
+}
+
+.order-meta {
+  font-size: 13px;
+  color: #999;
+  display: flex;
+  gap: 12px;
+}
+
+.order-pay-method {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pay-wechat { color: #07c160; }
+.pay-alipay { color: #1677ff; }
+
+.order-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.order-amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ff4d4f;
+}
+
+.btn-settle {
+  background: #1677ff;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-settle:active { background: #0958d9; }
+
+.btn-done {
+  background: #e8e8e8;
+  color: #999;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px;
+  line-height: 1;
+}
+
+.btn-delete:active { color: #ff4d4f; }
+
+/* ===== 好友卡片 ===== */
+.friend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.friend-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.friend-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1677ff, #69b1ff);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.friend-info {
+  flex: 1;
+}
+
+.friend-name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.friend-phone {
+  font-size: 13px;
+  color: #999;
+  margin-top: 2px;
+}
+
+/* ===== 添加表单 ===== */
+.add-form {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.add-form h4 {
+  font-size: 15px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 8px;
+  outline: none;
+  background: #fafafa;
+  transition: border 0.2s;
+}
+
+.form-input:focus {
+  border-color: #1677ff;
+  background: #fff;
+}
+
+.btn-primary {
+  width: 100%;
+  background: #1677ff;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-primary:active { background: #0958d9; }
+
+.btn-add {
+  background: #1677ff;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-add:active { background: #0958d9; }
+
+/* ===== 个人中心 ===== */
+.profile-card {
+  text-align: center;
+  padding: 24px;
+  background: #fff;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.profile-avatar {
+  font-size: 56px;
+  margin-bottom: 8px;
+}
+
+.profile-name {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.stat-num {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1677ff;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* ===== 空状态 ===== */
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: #ccc;
+}
+
+.empty-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ===== 底部导航 ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  background: #fff;
+  display: flex;
+  border-top: 1px solid #eee;
+  padding: 6px 0;
+  padding-bottom: max(6px, env(safe-area-inset-bottom));
+  z-index: 100;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
+  cursor: pointer;
+  transition: color 0.2s;
+  color: #999;
+}
+
+.nav-item.active {
+  color: #1677ff;
+}
+
+.nav-icon {
+  font-size: 22px;
+  margin-bottom: 2px;
+}
+
+.nav-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* ===== 弹窗 ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.modal-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 340px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+.modal-card h3 {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.modal-order-info {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.modal-order-info strong {
+  color: #ff4d4f;
+  font-size: 18px;
+}
+
+/* 支付选择 */
+.pay-options {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pay-option {
+  flex: 1;
+  text-align: center;
+  padding: 16px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  border: 2px solid #eee;
+  transition: all 0.2s;
+}
+
+.pay-option:active {
+  transform: scale(0.97);
+}
+
+.pay-option.pay-wechat {
+  background: #f0faf4;
+  border-color: #07c160;
+}
+
+.pay-option.pay-alipay {
+  background: #f0f5ff;
+  border-color: #1677ff;
+}
+
+.pay-icon {
+  font-size: 36px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.pay-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.pay-wechat .pay-name { color: #07c160; }
+.pay-alipay .pay-name { color: #1677ff; }
+
+.btn-cancel {
+  width: 100%;
+  background: #f5f5f5;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  color: #666;
+}
+
+.btn-cancel:active { background: #e8e8e8; }
+
+/* 新建订单弹窗按钮组 */
+.modal-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-btns .btn-cancel {
+  flex: 1;
+}
+
+.modal-btns .btn-primary {
+  flex: 1;
+}
+
+</style>
+<style>
+/* Inlined CSS */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;color:#333;min-height:100vh;-webkit-tap-highlight-color:transparent}.app-container{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;background:#f0f2f5;position:relative}.top-bar{background:linear-gradient(135deg,#1677ff,#0958d9);color:#fff;padding:16px 20px;flex-shrink:0}.top-bar h1{font-size:20px;font-weight:600}.page-content{flex:1;overflow-y:auto;padding:12px 16px;padding-bottom:80px}.tab-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:14px;color:#666;font-weight:500}.order-list{display:flex;flex-direction:column;gap:10px}.order-card{background:#fff;border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.order-info{flex:1;min-width:0}.order-title{font-size:16px;font-weight:600;margin-bottom:4px;color:#1a1a1a}.order-meta{font-size:13px;color:#999;display:flex;gap:12px}.order-pay-method{margin-top:4px;font-size:13px;font-weight:500}.pay-wechat{color:#07c160}.pay-alipay{color:#1677ff}.order-actions{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;margin-left:12px}.order-amount{font-size:18px;font-weight:700;color:#ff4d4f}.btn-settle{background:#1677ff;color:#fff;border:none;padding:6px 14px;border-radius:16px;font-size:13px;cursor:pointer;white-space:nowrap}.btn-settle:active{background:#0958d9}.btn-done{background:#e8e8e8;color:#999;border:none;padding:6px 14px;border-radius:16px;font-size:13px;white-space:nowrap}.btn-delete{background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:2px;line-height:1}.btn-delete:active{color:#ff4d4f}.friend-list{display:flex;flex-direction:column;gap:8px}.friend-card{background:#fff;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.friend-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1677ff,#69b1ff);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;flex-shrink:0}.friend-info{flex:1}.friend-name{font-size:16px;font-weight:500}.friend-phone{font-size:13px;color:#999;margin-top:2px}.add-form{background:#fff;border-radius:12px;padding:16px;margin-top:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.add-form h4{font-size:15px;margin-bottom:10px;color:#333}.form-input{width:100%;padding:10px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:8px;outline:none;background:#fafafa;transition:border 0.2s}.form-input:focus{border-color:#1677ff;background:#fff}.btn-primary{width:100%;background:#1677ff;color:#fff;border:none;padding:10px;border-radius:8px;font-size:15px;cursor:pointer;font-weight:500}.btn-primary:active{background:#0958d9}.btn-add{background:#1677ff;color:#fff;border:none;padding:6px 14px;border-radius:16px;font-size:13px;cursor:pointer;font-weight:500}.btn-add:active{background:#0958d9}.profile-card{text-align:center;padding:24px;background:#fff;border-radius:12px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.profile-avatar{font-size:56px;margin-bottom:8px}.profile-name{font-size:18px;font-weight:600}.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat-item{background:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.stat-num{display:block;font-size:24px;font-weight:700;color:#1677ff}.stat-label{font-size:13px;color:#999;margin-top:4px}.empty-state{text-align:center;padding:48px 20px;color:#ccc}.empty-icon{font-size:48px;display:block;margin-bottom:8px}.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:#fff;display:flex;border-top:1px solid #eee;padding:6px 0;padding-bottom:max(6px,env(safe-area-inset-bottom));z-index:100}.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 0;cursor:pointer;transition:color 0.2s;color:#999}.nav-item.active{color:#1677ff}.nav-icon{font-size:22px;margin-bottom:2px}.nav-label{font-size:11px;font-weight:500}.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}.modal-card{background:#fff;border-radius:16px;padding:24px 20px;width:100%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.12)}.modal-card h3{text-align:center;font-size:18px;margin-bottom:16px}.modal-order-info{text-align:center;font-size:14px;color:#666;margin-bottom:16px;line-height:1.6}.modal-order-info strong{color:#ff4d4f;font-size:18px}.pay-options{display:flex;gap:12px;margin-bottom:16px}.pay-option{flex:1;text-align:center;padding:16px 12px;border-radius:12px;cursor:pointer;border:2px solid #eee;transition:all 0.2s}.pay-option:active{transform:scale(0.97)}.pay-option.pay-wechat{background:#f0faf4;border-color:#07c160}.pay-option.pay-alipay{background:#f0f5ff;border-color:#1677ff}.pay-icon{font-size:36px;display:block;margin-bottom:6px}.pay-name{font-weight:600;font-size:15px}.pay-wechat .pay-name{color:#07c160}.pay-alipay .pay-name{color:#1677ff}.btn-cancel{width:100%;background:#f5f5f5;border:none;padding:10px;border-radius:8px;font-size:15px;cursor:pointer;color:#666}.btn-cancel:active{background:#e8e8e8}.modal-btns{display:flex;gap:10px}.modal-btns .btn-cancel{flex:1}.modal-btns .btn-primary{flex:1}
+</style>
+<style>
+/* Inlined CSS */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;color:#333;min-height:100vh;-webkit-tap-highlight-color:transparent}.app-container{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;background:#f0f2f5;position:relative}.top-bar{background:linear-gradient(135deg,#1677ff,#0958d9);color:#fff;padding:16px 20px;flex-shrink:0}.top-bar h1{font-size:20px;font-weight:600}.page-content{flex:1;overflow-y:auto;padding:12px 16px;padding-bottom:80px}.tab-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:14px;color:#666;font-weight:500}.order-list{display:flex;flex-direction:column;gap:10px}.order-card{background:#fff;border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.order-info{flex:1;min-width:0}.order-title{font-size:16px;font-weight:600;margin-bottom:4px;color:#1a1a1a}.order-meta{font-size:13px;color:#999;display:flex;gap:12px}.order-pay-method{margin-top:4px;font-size:13px;font-weight:500}.pay-wechat{color:#07c160}.pay-alipay{color:#1677ff}.order-actions{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;margin-left:12px}.order-amount{font-size:18px;font-weight:700;color:#ff4d4f}.btn-settle{background:#1677ff;color:#fff;border:none;padding:6px 14px;border-radius:16px;font-size:13px;cursor:pointer;white-space:nowrap}.btn-settle:active{background:#0958d9}.btn-done{background:#e8e8e8;color:#999;border:none;padding:6px 14px;border-radius:16px;font-size:13px;white-space:nowrap}.btn-delete{background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:2px;line-height:1}.btn-delete:active{color:#ff4d4f}.friend-list{display:flex;flex-direction:column;gap:8px}.friend-card{background:#fff;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.friend-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1677ff,#69b1ff);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;flex-shrink:0}.friend-info{flex:1}.friend-name{font-size:16px;font-weight:500}.friend-phone{font-size:13px;color:#999;margin-top:2px}.add-form{background:#fff;border-radius:12px;padding:16px;margin-top:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.add-form h4{font-size:15px;margin-bottom:10px;color:#333}.form-input{width:100%;padding:10px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:8px;outline:none;background:#fafafa;transition:border 0.2s}.form-input:focus{border-color:#1677ff;background:#fff}.btn-primary{width:100%;background:#1677ff;color:#fff;border:none;padding:10px;border-radius:8px;font-size:15px;cursor:pointer;font-weight:500}.btn-primary:active{background:#0958d9}.btn-add{background:#1677ff;color:#fff;border:none;padding:6px 14px;border-radius:16px;font-size:13px;cursor:pointer;font-weight:500}.btn-add:active{background:#0958d9}.profile-card{text-align:center;padding:24px;background:#fff;border-radius:12px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.profile-avatar{font-size:56px;margin-bottom:8px}.profile-name{font-size:18px;font-weight:600}.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat-item{background:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.stat-num{display:block;font-size:24px;font-weight:700;color:#1677ff}.stat-label{font-size:13px;color:#999;margin-top:4px}.empty-state{text-align:center;padding:48px 20px;color:#ccc}.empty-icon{font-size:48px;display:block;margin-bottom:8px}.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:#fff;display:flex;border-top:1px solid #eee;padding:6px 0;padding-bottom:max(6px,env(safe-area-inset-bottom));z-index:100}.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 0;cursor:pointer;transition:color 0.2s;color:#999}.nav-item.active{color:#1677ff}.nav-icon{font-size:22px;margin-bottom:2px}.nav-label{font-size:11px;font-weight:500}.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}.modal-card{background:#fff;border-radius:16px;padding:24px 20px;width:100%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.12)}.modal-card h3{text-align:center;font-size:18px;margin-bottom:16px}.modal-order-info{text-align:center;font-size:14px;color:#666;margin-bottom:16px;line-height:1.6}.modal-order-info strong{color:#ff4d4f;font-size:18px}.pay-options{display:flex;gap:12px;margin-bottom:16px}.pay-option{flex:1;text-align:center;padding:16px 12px;border-radius:12px;cursor:pointer;border:2px solid #eee;transition:all 0.2s}.pay-option:active{transform:scale(0.97)}.pay-option.pay-wechat{background:#f0faf4;border-color:#07c160}.pay-option.pay-alipay{background:#f0f5ff;border-color:#1677ff}.pay-icon{font-size:36px;display:block;margin-bottom:6px}.pay-name{font-weight:600;font-size:15px}.pay-wechat .pay-name{color:#07c160}.pay-alipay .pay-name{color:#1677ff}.btn-cancel{width:100%;background:#f5f5f5;border:none;padding:10px;border-radius:8px;font-size:15px;cursor:pointer;color:#666}.btn-cancel:active{background:#e8e8e8}.modal-btns{display:flex;gap:10px}.modal-btns .btn-cancel{flex:1}.modal-btns .btn-primary{flex:1}
+</style>
+<style>
+/* Inlined CSS */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;color:#333;min-height:100vh;-webkit-tap-highlight-color:transparent}.app-container{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;background:#f0f2f5;position:relative}.top-bar{background:linear-gradient(135deg,#1677ff,#0958d9);color:#fff;padding:16px 20px;flex-shrink:0}.top-bar h1{font-size:20px;font-weight:600}.page-content{flex:1;overflow-y:auto;padding:12px 16px;padding-bottom:80px}.tab-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:14px;color:#666;font-weight:500}.order-list{display:flex;flex-direction:column;gap:10px}.order-card{background:#fff;border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.order-info{flex:1;min-width:0}.order-title{font-size:16px;font-weight:600;margin-bottom:4px;color:#1a1a1a}.order-meta{font-size:13px;color:#999;display:flex;gap:12px}.order-pay-method{margin-top:4px;font-size:13px;font-weight:500}.pay-wechat{color:#07c160}.pay-alipay{color:#1677ff}.order-actions{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;margin-left:12px}.order-amount{font-size:18px;font-weight:700;color:#ff4d4f}.btn-settle{background:#1677ff;color:#fff;border:none;padding:6px 14px;border-radius:16px;font-size:13px;cursor:pointer;white-space:nowrap}.btn-settle:active{background:#0958d9}.btn-done{background:#e8e8e8;color:#999;border:none;padding:6px 14px;border-radius:16px;font-size:13px;white-space:nowrap}.btn-delete{background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:2px;line-height:1}.btn-delete:active{color:#ff4d4f}.friend-list{display:flex;flex-direction:column;gap:8px}.friend-card{background:#fff;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.friend-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1677ff,#69b1ff);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;flex-shrink:0}.friend-info{flex:1}.friend-name{font-size:16px;font-weight:500}.friend-phone{font-size:13px;color:#999;margin-top:2px}.add-form{background:#fff;border-radius:12px;padding:16px;margin-top:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.add-form h4{font-size:15px;margin-bottom:10px;color:#333}.form-input{width:100%;padding:10px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:8px;outline:none;background:#fafafa;transition:border 0.2s}.form-input:focus{border-color:#1677ff;background:#fff}.btn-primary{width:100%;background:#1677ff;color:#fff;border:none;padding:10px;border-radius:8px;font-size:15px;cursor:pointer;font-weight:500}.btn-primary:active{background:#0958d9}.btn-add{background:#1677ff;color:#fff;border:none;padding:6px 14px;border-radius:16px;font-size:13px;cursor:pointer;font-weight:500}.btn-add:active{background:#0958d9}.profile-card{text-align:center;padding:24px;background:#fff;border-radius:12px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.profile-avatar{font-size:56px;margin-bottom:8px}.profile-name{font-size:18px;font-weight:600}.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat-item{background:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.06)}.stat-num{display:block;font-size:24px;font-weight:700;color:#1677ff}.stat-label{font-size:13px;color:#999;margin-top:4px}.empty-state{text-align:center;padding:48px 20px;color:#ccc}.empty-icon{font-size:48px;display:block;margin-bottom:8px}.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:#fff;display:flex;border-top:1px solid #eee;padding:6px 0;padding-bottom:max(6px,env(safe-area-inset-bottom));z-index:100}.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 0;cursor:pointer;transition:color 0.2s;color:#999}.nav-item.active{color:#1677ff}.nav-icon{font-size:22px;margin-bottom:2px}.nav-label{font-size:11px;font-weight:500}.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}.modal-card{background:#fff;border-radius:16px;padding:24px 20px;width:100%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.12)}.modal-card h3{text-align:center;font-size:18px;margin-bottom:16px}.modal-order-info{text-align:center;font-size:14px;color:#666;margin-bottom:16px;line-height:1.6}.modal-order-info strong{color:#ff4d4f;font-size:18px}.pay-options{display:flex;gap:12px;margin-bottom:16px}.pay-option{flex:1;text-align:center;padding:16px 12px;border-radius:12px;cursor:pointer;border:2px solid #eee;transition:all 0.2s}.pay-option:active{transform:scale(0.97)}.pay-option.pay-wechat{background:#f0faf4;border-color:#07c160}.pay-option.pay-alipay{background:#f0f5ff;border-color:#1677ff}.pay-icon{font-size:36px;display:block;margin-bottom:6px}.pay-name{font-weight:600;font-size:15px}.pay-wechat .pay-name{color:#07c160}.pay-alipay .pay-name{color:#1677ff}.btn-cancel{width:100%;background:#f5f5f5;border:none;padding:10px;border-radius:8px;font-size:15px;cursor:pointer;color:#666}.btn-cancel:active{background:#e8e8e8}.modal-btns{display:flex;gap:10px}.modal-btns .btn-cancel{flex:1}.modal-btns .btn-primary{flex:1}
+</style>
 </head>
 <body>
-    <div id="chat-container">
-        <div id="chat-header">
-            <h2>AI Srayons 聊天室</h2>
-            <p>状态: <span id="connection-status" class="disconnected">未连接</span></p>
+  <div id="app"></div>
+  <script src="/vendor/vue.global.prod.js"></script>
+  <!-- JS inlined -->
+  <!-- JS inlined -->
+  <!-- JS inlined -->
+  <!-- JS inlined -->
+  <!-- JS inlined -->
+  <!-- JS inlined -->
+<script>
+/* Inlined JS */
+(function() {
+    'use strict';
+
+    function initApp() {
+        try {
+const { createApp, reactive, ref, computed } = Vue;
+
+const app = createApp({
+  template: `
+    <div class="app-container">
+      <header class="top-bar">
+        <h1>{{ pageTitle }}</h1>
+      </header>
+
+      <main class="page-content">
+        <!-- 已发单 -->
+        <div v-if="activeTab === 'sent'">
+          <div class="tab-header">
+            <span>待结算订单 ({{ sentOrders.length }})</span>
+            <button class="btn-add" @click="showAddOrder = true">+ 新建</button>
+          </div>
+          <order-list
+            :orders="sentOrders"
+            status="sent"
+            @settle="openPayment"
+            @delete="deleteOrder"
+          />
         </div>
-        
-        <div id="username-section">
-            <input type="text" id="username-input" placeholder="输入您的用户名" />
-            <button id="connect-button" onclick="connect()">连接</button>
-            <button id="disconnect-button" onclick="disconnect()" disabled>断开连接</button>
+
+        <!-- 已结单 -->
+        <div v-if="activeTab === 'settled'">
+          <div class="tab-header">
+            <span>已完成订单 ({{ settledOrders.length }})</span>
+          </div>
+          <order-list
+            :orders="settledOrders"
+            status="settled"
+            @delete="deleteOrder"
+          />
         </div>
-        
-        <div id="message-section">
-            <div id="messages"></div>
-            
-            <form id="message-form">
-                <input type="text" id="message-input" placeholder="输入消息..." disabled />
-                <button id="send-button" type="submit" disabled>发送</button>
-            </form>
+
+        <!-- 好友列表 -->
+        <div v-if="activeTab === 'friends'">
+          <friend-list
+            :friends="friends"
+            @add="addFriend"
+            @delete="deleteFriend"
+          />
         </div>
+
+        <!-- 我的 -->
+        <div v-if="activeTab === 'me'">
+          <div class="profile-card">
+            <div class="profile-avatar">🧑</div>
+            <div class="profile-name">用户</div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-num">{{ sentOrders.length }}</span>
+              <span class="stat-label">待结算</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">{{ settledOrders.length }}</span>
+              <span class="stat-label">已完成</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">{{ friends.length }}</span>
+              <span class="stat-label">好友数</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">¥{{ totalSettled }}</span>
+              <span class="stat-label">总金额</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <bottom-nav
+        :activeTab="activeTab"
+        @tab-change="switchTab"
+      />
+
+      <payment-modal
+        :visible="showPayment"
+        :order="payingOrder"
+        @pay="handlePay"
+        @close="showPayment = false"
+      />
+
+      <!-- 新建订单弹窗 -->
+      <div v-if="showAddOrder" class="modal-overlay" @click.self="showAddOrder = false">
+        <div class="modal-card">
+          <h3>新建订单</h3>
+          <input v-model="newOrderTitle" placeholder="订单名称" class="form-input" />
+          <input v-model="newOrderAmount" placeholder="金额" type="number" class="form-input" />
+          <select v-model="newOrderFriend" class="form-input">
+            <option value="">选择好友</option>
+            <option v-for="f in friends" :key="f.id" :value="f.name">{{ f.name }}</option>
+          </select>
+          <div class="modal-btns">
+            <button class="btn-cancel" @click="showAddOrder = false">取消</button>
+            <button class="btn-primary" @click="addOrder">确认</button>
+          </div>
+        </div>
+      </div>
     </div>
+  `,
 
-    <!-- 引入SockJS和STOMP客户端 -->
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-    
-    <script>
-        var stompClient = null;
-        var connected = false;
+  setup() {
+    // 页面标题映射
+    const titles = {
+      sent: '已发单',
+      settled: '已结单',
+      friends: '好友列表',
+      me: '我的'
+    };
 
-        // 发送连接
-        function setConnected(connected) {
-            document.getElementById('connect-button').disabled = connected;
-            document.getElementById('disconnect-button').disabled = !connected;
-            document.getElementById('username-input').disabled = connected;
-            document.getElementById('message-input').disabled = !connected;
-            document.getElementById('send-button').disabled = !connected;
-            
-            // 检测连接状态
-            if (connected) {
-                document.getElementById('connection-status').textContent = '已连接';
-                document.getElementById('connection-status').className = 'connected';
-            } else {
-                document.getElementById('connection-status').textContent = '未连接';
-                document.getElementById('connection-status').className = 'disconnected';
-            }
+    // --- 响应式状态 ---
+    const activeTab = ref('sent');
+    const showPayment = ref(false);
+    const payingOrder = ref(null);
+    const showAddOrder = ref(false);
+    const newOrderTitle = ref('');
+    const newOrderAmount = ref('');
+    const newOrderFriend = ref('');
+
+    const orders = reactive([
+      { id: 1, title: '午餐AA', amount: 35.50, status: 'sent', friend: '张三', payMethod: null, date: '2025-01-15' },
+      { id: 2, title: '电影票', amount: 60.00, status: 'sent', friend: '李四', payMethod: null, date: '2025-01-14' },
+      { id: 3, title: '聚餐分摊', amount: 128.00, status: 'settled', friend: '王五', payMethod: '微信', date: '2025-01-13' },
+      { id: 4, title: '奶茶拼单', amount: 18.00, status: 'settled', friend: '张三', payMethod: '支付宝', date: '2025-01-12' },
+      { id: 5, title: '打车费', amount: 42.00, status: 'sent', friend: '王五', payMethod: null, date: '2025-01-16' }
+    ]);
+
+    const friends = reactive([
+      { id: 1, name: '张三', phone: '138****1234' },
+      { id: 2, name: '李四', phone: '139****5678' },
+      { id: 3, name: '王五', phone: '136****9012' }
+    ]);
+
+    // --- 计算属性 ---
+    const pageTitle = computed(() => titles[activeTab.value]);
+
+    const sentOrders = computed(() =>
+      orders.filter(o => o.status === 'sent')
+    );
+
+    const settledOrders = computed(() =>
+      orders.filter(o => o.status === 'settled')
+    );
+
+    const totalSettled = computed(() =>
+      settledOrders.value.reduce((sum, o) => sum + o.amount, 0).toFixed(2)
+    );
+
+    // --- 方法 ---
+    let nextOrderId = 6;
+    let nextFriendId = 4;
+
+    function switchTab(key) {
+      activeTab.value = key;
+    }
+
+    function openPayment(order) {
+      payingOrder.value = order;
+      showPayment.value = true;
+    }
+
+    function handlePay(method) {
+      const idx = orders.findIndex(o => o.id === payingOrder.value.id);
+      if (idx !== -1) {
+        orders[idx].status = 'settled';
+        orders[idx].payMethod = method;
+      }
+      showPayment.value = false;
+      payingOrder.value = null;
+    }
+
+    function deleteOrder(id) {
+      const idx = orders.findIndex(o => o.id === id);
+      if (idx !== -1) {
+        orders.splice(idx, 1);
+      }
+    }
+
+    function addOrder() {
+      if (!newOrderTitle.value.trim() || !newOrderAmount.value || !newOrderFriend.value) return;
+      orders.push({
+        id: nextOrderId++,
+        title: newOrderTitle.value.trim(),
+        amount: parseFloat(newOrderAmount.value),
+        status: 'sent',
+        friend: newOrderFriend.value,
+        payMethod: null,
+        date: new Date().toISOString().slice(0, 10)
+      });
+      newOrderTitle.value = '';
+      newOrderAmount.value = '';
+      newOrderFriend.value = '';
+      showAddOrder.value = false;
+    }
+
+    function addFriend({ name, phone }) {
+      friends.push({
+        id: nextFriendId++,
+        name,
+        phone
+      });
+    }
+
+    function deleteFriend(id) {
+      const idx = friends.findIndex(f => f.id === id);
+      if (idx !== -1) {
+        friends.splice(idx, 1);
+      }
+    }
+
+    return {
+      activeTab, pageTitle,
+      sentOrders, settledOrders, totalSettled,
+      friends,
+      showPayment, payingOrder,
+      showAddOrder, newOrderTitle, newOrderAmount, newOrderFriend,
+      switchTab, openPayment, handlePay,
+      deleteOrder, addOrder,
+      addFriend, deleteFriend
+    };
+  }
+});
+
+// 注册全局组件
+app.component('bottom-nav', window.BottomNav);
+app.component('order-list', window.OrderList);
+app.component('friend-list', window.FriendList);
+app.component('payment-modal', window.PaymentModal);
+
+app.mount('#app');
+
+
+window.OrderList = {
+  props: ['orders', 'status'],
+  emits: ['settle', 'delete'],
+  template: `
+    <div class="order-list">
+      <div v-if="orders.length === 0" class="empty-state">
+        <span class="empty-icon">📭</span>
+        <p>{{ status === 'sent' ? '暂无待结算订单' : '暂无已结订单' }}</p>
+      </div>
+      <div v-for="order in orders" :key="order.id" class="order-card">
+        <div class="order-info">
+          <div class="order-title">{{ order.title }}</div>
+          <div class="order-meta">
+            <span class="order-friend">👤 {{ order.friend }}</span>
+            <span class="order-date">{{ order.date }}</span>
+          </div>
+          <div v-if="order.status === 'settled'" class="order-pay-method">
+            <span :class="order.payMethod === '微信' ? 'pay-wechat' : 'pay-alipay'">
+              {{ order.payMethod === '微信' ? '💚' : '💙' }} {{ order.payMethod }}
+            </span>
+          </div>
+        </div>
+        <div class="order-actions">
+          <span class="order-amount">¥{{ order.amount.toFixed(2) }}</span>
+          <button
+            v-if="status === 'sent'"
+            class="btn-settle"
+            @click="$emit('settle', order)"
+          >去结算</button>
+          <button
+            v-else
+            class="btn-done"
+            disabled
+          >已支付</button>
+          <button class="btn-delete" @click="$emit('delete', order.id)">✕</button>
+        </div>
+      </div>
+    </div>
+  `
+};
+
+
+window.FriendList = {
+  props: ['friends'],
+  emits: ['delete', 'add'],
+  template: `
+    <div class="friend-list">
+      <div v-if="friends.length === 0" class="empty-state">
+        <span class="empty-icon">👥</span>
+        <p>暂无好友</p>
+      </div>
+      <div v-for="friend in friends" :key="friend.id" class="friend-card">
+        <div class="friend-avatar">{{ friend.name[0] }}</div>
+        <div class="friend-info">
+          <div class="friend-name">{{ friend.name }}</div>
+          <div class="friend-phone">{{ friend.phone }}</div>
+        </div>
+        <button class="btn-delete" @click="$emit('delete', friend.id)">✕</button>
+      </div>
+
+      <!-- 添加好友表单 -->
+      <div class="add-form">
+        <h4>添加好友</h4>
+        <input v-model="newName" placeholder="好友姓名" class="form-input" />
+        <input v-model="newPhone" placeholder="手机号" class="form-input" />
+        <button class="btn-primary" @click="handleAdd">添加</button>
+      </div>
+    </div>
+  `,
+  setup(props, { emit }) {
+    const newName = Vue.ref('');
+    const newPhone = Vue.ref('');
+
+    function handleAdd() {
+      if (!newName.value.trim()) return;
+      emit('add', { name: newName.value.trim(), phone: newPhone.value.trim() || '未填写' });
+      newName.value = '';
+      newPhone.value = '';
+    }
+
+    return { newName, newPhone, handleAdd };
+  }
+};
+
+
+window.PaymentModal = {
+  props: ['visible', 'order'],
+  emits: ['pay', 'close'],
+  template: `
+    <div v-if="visible" class="modal-overlay" @click.self="$emit('close')">
+      <div class="modal-card">
+        <h3>选择支付方式</h3>
+        <p class="modal-order-info" v-if="order">
+          订单：{{ order.title }}<br>
+          金额：<strong>¥{{ order.amount.toFixed(2) }}</strong>
+        </p>
+        <div class="pay-options">
+          <div class="pay-option pay-wechat" @click="$emit('pay', '微信')">
+            <span class="pay-icon">💚</span>
+            <span class="pay-name">微信支付</span>
+          </div>
+          <div class="pay-option pay-alipay" @click="$emit('pay', '支付宝')">
+            <span class="pay-icon">💙</span>
+            <span class="pay-name">支付宝</span>
+          </div>
+        </div>
+        <button class="btn-cancel" @click="$emit('close')">取消</button>
+      </div>
+    </div>
+  `
+};
+
+
+window.BottomNav = {
+  props: ['activeTab'],
+  emits: ['tab-change'],
+  template: `
+    <nav class="bottom-nav">
+      <div
+        v-for="tab in tabs"
+        :key="tab.key"
+        class="nav-item"
+        :class="{ active: activeTab === tab.key }"
+        @click="$emit('tab-change', tab.key)"
+      >
+        <span class="nav-icon" v-html="tab.icon"></span>
+        <span class="nav-label">{{ tab.label }}</span>
+      </div>
+    </nav>
+  `,
+  setup() {
+    const tabs = [
+      { key: 'sent',    label: '已发单', icon: '📤' },
+      { key: 'settled', label: '已结单', icon: '✅' },
+      { key: 'friends', label: '好友',   icon: '👥' },
+      { key: 'me',      label: '我的',   icon: '👤' }
+    ];
+    return { tabs };
+  }
+};
+        } catch (e) {
+            console.error('[WebToApp] JS execution error:', e);
         }
+    }
 
-        function connect() {
-            var username = document.getElementById('username-input').value.trim();
-            
-            if (username === '') {
-                alert('请输入用户名');
-                return;
-            }
-            
-            var socket = new SockJS('/ws');
-            stompClient = Stomp.over(socket);
-            
-            stompClient.connect({}, function(frame) {
-                console.log('Connected: ' + frame);
-                connected = true;
-                setConnected(true);
-                
-                // 发送注册消息
-                stompClient.send("/app/chat.register", {}, JSON.stringify({
-                    'from': username,
-                    'type': 'JOIN'
-                }));
-                
-                // 订阅公共聊天主题
-                stompClient.subscribe('/topic/public', function(messageOutput) {
-                    showMessage(JSON.parse(messageOutput.body));
-                });
-            });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+        initApp();
+    }
+})();
+</script>
+<script>
+/* Inlined JS */
+(function() {
+    'use strict';
+
+    function initApp() {
+        try {
+const {createApp,reactive,ref,computed }=Vue;const app =createApp({template:`
+    <div class="app-container">
+      <header class="top-bar">
+        <h1>{{ pageTitle }}</h1>
+      </header>
+
+      <main class="page-content">
+        <!-- 已发单 -->
+        <div v-if="activeTab === 'sent'">
+          <div class="tab-header">
+            <span>待结算订单 ({{ sentOrders.length }})</span>
+            <button class="btn-add" @click="showAddOrder = true">+ 新建</button>
+          </div>
+          <order-list
+            :orders="sentOrders"
+            status="sent"
+            @settle="openPayment"
+            @delete="deleteOrder"
+          />
+        </div>
+
+        <!-- 已结单 -->
+        <div v-if="activeTab === 'settled'">
+          <div class="tab-header">
+            <span>已完成订单 ({{ settledOrders.length }})</span>
+          </div>
+          <order-list
+            :orders="settledOrders"
+            status="settled"
+            @delete="deleteOrder"
+          />
+        </div>
+
+        <!-- 好友列表 -->
+        <div v-if="activeTab === 'friends'">
+          <friend-list
+            :friends="friends"
+            @add="addFriend"
+            @delete="deleteFriend"
+          />
+        </div>
+
+        <!-- 我的 -->
+        <div v-if="activeTab === 'me'">
+          <div class="profile-card">
+            <div class="profile-avatar">🧑</div>
+            <div class="profile-name">用户</div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-num">{{ sentOrders.length }}</span>
+              <span class="stat-label">待结算</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">{{ settledOrders.length }}</span>
+              <span class="stat-label">已完成</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">{{ friends.length }}</span>
+              <span class="stat-label">好友数</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">¥{{ totalSettled }}</span>
+              <span class="stat-label">总金额</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <bottom-nav
+        :activeTab="activeTab"
+        @tab-change="switchTab"
+      />
+
+      <payment-modal
+        :visible="showPayment"
+        :order="payingOrder"
+        @pay="handlePay"
+        @close="showPayment = false"
+      />
+
+      <!-- 新建订单弹窗 -->
+      <div v-if="showAddOrder" class="modal-overlay" @click.self="showAddOrder = false">
+        <div class="modal-card">
+          <h3>新建订单</h3>
+          <input v-model="newOrderTitle" placeholder="订单名称" class="form-input" />
+          <input v-model="newOrderAmount" placeholder="金额" type="number" class="form-input" />
+          <select v-model="newOrderFriend" class="form-input">
+            <option value="">选择好友</option>
+            <option v-for="f in friends" :key="f.id" :value="f.name">{{ f.name }}</option>
+          </select>
+          <div class="modal-btns">
+            <button class="btn-cancel" @click="showAddOrder = false">取消</button>
+            <button class="btn-primary" @click="addOrder">确认</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,setup(){
+const titles ={sent:'已发单',settled:'已结单',friends:'好友列表',me:'我的'};
+const activeTab =ref('sent');const showPayment =ref(false);const payingOrder =ref(null);const showAddOrder =ref(false);const newOrderTitle =ref('');const newOrderAmount =ref('');const newOrderFriend =ref('');const orders =reactive([{id:1,title:'午餐AA',amount:35.50,status:'sent',friend:'张三',payMethod:null,date:'2025-01-15'},{id:2,title:'电影票',amount:60.00,status:'sent',friend:'李四',payMethod:null,date:'2025-01-14'},{id:3,title:'聚餐分摊',amount:128.00,status:'settled',friend:'王五',payMethod:'微信',date:'2025-01-13'},{id:4,title:'奶茶拼单',amount:18.00,status:'settled',friend:'张三',payMethod:'支付宝',date:'2025-01-12'},{id:5,title:'打车费',amount:42.00,status:'sent',friend:'王五',payMethod:null,date:'2025-01-16'}]);const friends =reactive([{id:1,name:'张三',phone:'138****1234'},{id:2,name:'李四',phone:'139****5678'},{id:3,name:'王五',phone:'136****9012'}]);
+const pageTitle =computed(()=>titles[activeTab.value]);const sentOrders =computed(()=>orders.filter(o =>o.status ==='sent'));const settledOrders =computed(()=>orders.filter(o =>o.status ==='settled'));const totalSettled =computed(()=>settledOrders.value.reduce((sum,o)=>sum +o.amount,0).toFixed(2));
+let nextOrderId =6;let nextFriendId =4;function switchTab(key){activeTab.value =key;}function openPayment(order){payingOrder.value =order;showPayment.value =true;}function handlePay(method){const idx =orders.findIndex(o =>o.id ===payingOrder.value.id);if (idx !==-1){orders[idx].status ='settled';orders[idx].payMethod =method;}showPayment.value =false;payingOrder.value =null;}function deleteOrder(id){const idx =orders.findIndex(o =>o.id ===id);if (idx !==-1){orders.splice(idx,1);}}function addOrder(){if (!newOrderTitle.value.trim()||!newOrderAmount.value ||!newOrderFriend.value)return;orders.push({id:nextOrderId++,title:newOrderTitle.value.trim(),amount:parseFloat(newOrderAmount.value),status:'sent',friend:newOrderFriend.value,payMethod:null,date:new Date().toISOString().slice(0,10)});newOrderTitle.value ='';newOrderAmount.value ='';newOrderFriend.value ='';showAddOrder.value =false;}function addFriend({name,phone }){friends.push({id:nextFriendId++,name,phone });}function deleteFriend(id){const idx =friends.findIndex(f =>f.id ===id);if (idx !==-1){friends.splice(idx,1);}}return {activeTab,pageTitle,sentOrders,settledOrders,totalSettled,friends,showPayment,payingOrder,showAddOrder,newOrderTitle,newOrderAmount,newOrderFriend,switchTab,openPayment,handlePay,deleteOrder,addOrder,addFriend,deleteFriend };}});
+app.component('bottom-nav',window.BottomNav);app.component('order-list',window.OrderList);app.component('friend-list',window.FriendList);app.component('payment-modal',window.PaymentModal);app.mount('#app');
+
+window.OrderList = {
+  props: ['orders', 'status'],
+  emits: ['settle', 'delete'],
+  template: `
+    <div class="order-list">
+      <div v-if="orders.length === 0" class="empty-state">
+        <span class="empty-icon">📭</span>
+        <p>{{ status === 'sent' ? '暂无待结算订单' : '暂无已结订单' }}</p>
+      </div>
+      <div v-for="order in orders" :key="order.id" class="order-card">
+        <div class="order-info">
+          <div class="order-title">{{ order.title }}</div>
+          <div class="order-meta">
+            <span class="order-friend">👤 {{ order.friend }}</span>
+            <span class="order-date">{{ order.date }}</span>
+          </div>
+          <div v-if="order.status === 'settled'" class="order-pay-method">
+            <span :class="order.payMethod === '微信' ? 'pay-wechat' : 'pay-alipay'">
+              {{ order.payMethod === '微信' ? '💚' : '💙' }} {{ order.payMethod }}
+            </span>
+          </div>
+        </div>
+        <div class="order-actions">
+          <span class="order-amount">¥{{ order.amount.toFixed(2) }}</span>
+          <button
+            v-if="status === 'sent'"
+            class="btn-settle"
+            @click="$emit('settle', order)"
+          >去结算</button>
+          <button
+            v-else
+            class="btn-done"
+            disabled
+          >已支付</button>
+          <button class="btn-delete" @click="$emit('delete', order.id)">✕</button>
+        </div>
+      </div>
+    </div>
+  `
+};
+
+
+window.FriendList = {
+  props: ['friends'],
+  emits: ['delete', 'add'],
+  template: `
+    <div class="friend-list">
+      <div v-if="friends.length === 0" class="empty-state">
+        <span class="empty-icon">👥</span>
+        <p>暂无好友</p>
+      </div>
+      <div v-for="friend in friends" :key="friend.id" class="friend-card">
+        <div class="friend-avatar">{{ friend.name[0] }}</div>
+        <div class="friend-info">
+          <div class="friend-name">{{ friend.name }}</div>
+          <div class="friend-phone">{{ friend.phone }}</div>
+        </div>
+        <button class="btn-delete" @click="$emit('delete', friend.id)">✕</button>
+      </div>
+
+      <!-- 添加好友表单 -->
+      <div class="add-form">
+        <h4>添加好友</h4>
+        <input v-model="newName" placeholder="好友姓名" class="form-input" />
+        <input v-model="newPhone" placeholder="手机号" class="form-input" />
+        <button class="btn-primary" @click="handleAdd">添加</button>
+      </div>
+    </div>
+  `,
+  setup(props, { emit }) {
+    const newName = Vue.ref('');
+    const newPhone = Vue.ref('');
+
+    function handleAdd() {
+      if (!newName.value.trim()) return;
+      emit('add', { name: newName.value.trim(), phone: newPhone.value.trim() || '未填写' });
+      newName.value = '';
+      newPhone.value = '';
+    }
+
+    return { newName, newPhone, handleAdd };
+  }
+};
+
+
+window.PaymentModal = {
+  props: ['visible', 'order'],
+  emits: ['pay', 'close'],
+  template: `
+    <div v-if="visible" class="modal-overlay" @click.self="$emit('close')">
+      <div class="modal-card">
+        <h3>选择支付方式</h3>
+        <p class="modal-order-info" v-if="order">
+          订单：{{ order.title }}<br>
+          金额：<strong>¥{{ order.amount.toFixed(2) }}</strong>
+        </p>
+        <div class="pay-options">
+          <div class="pay-option pay-wechat" @click="$emit('pay', '微信')">
+            <span class="pay-icon">💚</span>
+            <span class="pay-name">微信支付</span>
+          </div>
+          <div class="pay-option pay-alipay" @click="$emit('pay', '支付宝')">
+            <span class="pay-icon">💙</span>
+            <span class="pay-name">支付宝</span>
+          </div>
+        </div>
+        <button class="btn-cancel" @click="$emit('close')">取消</button>
+      </div>
+    </div>
+  `
+};
+
+
+window.BottomNav = {
+  props: ['activeTab'],
+  emits: ['tab-change'],
+  template: `
+    <nav class="bottom-nav">
+      <div
+        v-for="tab in tabs"
+        :key="tab.key"
+        class="nav-item"
+        :class="{ active: activeTab === tab.key }"
+        @click="$emit('tab-change', tab.key)"
+      >
+        <span class="nav-icon" v-html="tab.icon"></span>
+        <span class="nav-label">{{ tab.label }}</span>
+      </div>
+    </nav>
+  `,
+  setup() {
+    const tabs = [
+      { key: 'sent',    label: '已发单', icon: '📤' },
+      { key: 'settled', label: '已结单', icon: '✅' },
+      { key: 'friends', label: '好友',   icon: '👥' },
+      { key: 'me',      label: '我的',   icon: '👤' }
+    ];
+    return { tabs };
+  }
+};
+        } catch (e) {
+            console.error('[WebToApp] JS execution error:', e);
         }
+    }
 
-        // 断开连接
-        function disconnect() {
-            if (stompClient !== null) {
-                stompClient.disconnect();
-            }
-            connected = false;
-            setConnected(false);
-            console.log("Disconnected");
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+        initApp();
+    }
+})();
+</script>
+<script>
+/* Inlined JS */
+(function() {
+    'use strict';
+
+    function initApp() {
+        try {
+const {createApp,reactive,ref,computed }=Vue;const app =createApp({template:`
+    <div class="app-container">
+      <header class="top-bar">
+        <h1>{{ pageTitle }}</h1>
+      </header>
+
+      <main class="page-content">
+        <!-- 已发单 -->
+        <div v-if="activeTab === 'sent'">
+          <div class="tab-header">
+            <span>待结算订单 ({{ sentOrders.length }})</span>
+            <button class="btn-add" @click="showAddOrder = true">+ 新建</button>
+          </div>
+          <order-list
+            :orders="sentOrders"
+            status="sent"
+            @settle="openPayment"
+            @delete="deleteOrder"
+          />
+        </div>
+
+        <!-- 已结单 -->
+        <div v-if="activeTab === 'settled'">
+          <div class="tab-header">
+            <span>已完成订单 ({{ settledOrders.length }})</span>
+          </div>
+          <order-list
+            :orders="settledOrders"
+            status="settled"
+            @delete="deleteOrder"
+          />
+        </div>
+
+        <!-- 好友列表 -->
+        <div v-if="activeTab === 'friends'">
+          <friend-list
+            :friends="friends"
+            @add="addFriend"
+            @delete="deleteFriend"
+          />
+        </div>
+
+        <!-- 我的 -->
+        <div v-if="activeTab === 'me'">
+          <div class="profile-card">
+            <div class="profile-avatar">🧑</div>
+            <div class="profile-name">用户</div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-num">{{ sentOrders.length }}</span>
+              <span class="stat-label">待结算</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">{{ settledOrders.length }}</span>
+              <span class="stat-label">已完成</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">{{ friends.length }}</span>
+              <span class="stat-label">好友数</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">¥{{ totalSettled }}</span>
+              <span class="stat-label">总金额</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <bottom-nav
+        :activeTab="activeTab"
+        @tab-change="switchTab"
+      />
+
+      <payment-modal
+        :visible="showPayment"
+        :order="payingOrder"
+        @pay="handlePay"
+        @close="showPayment = false"
+      />
+
+      <!-- 新建订单弹窗 -->
+      <div v-if="showAddOrder" class="modal-overlay" @click.self="showAddOrder = false">
+        <div class="modal-card">
+          <h3>新建订单</h3>
+          <input v-model="newOrderTitle" placeholder="订单名称" class="form-input" />
+          <input v-model="newOrderAmount" placeholder="金额" type="number" class="form-input" />
+          <select v-model="newOrderFriend" class="form-input">
+            <option value="">选择好友</option>
+            <option v-for="f in friends" :key="f.id" :value="f.name">{{ f.name }}</option>
+          </select>
+          <div class="modal-btns">
+            <button class="btn-cancel" @click="showAddOrder = false">取消</button>
+            <button class="btn-primary" @click="addOrder">确认</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,setup(){
+const titles ={sent:'已发单',settled:'已结单',friends:'好友列表',me:'我的'};
+const activeTab =ref('sent');const showPayment =ref(false);const payingOrder =ref(null);const showAddOrder =ref(false);const newOrderTitle =ref('');const newOrderAmount =ref('');const newOrderFriend =ref('');const orders =reactive([{id:1,title:'午餐AA',amount:35.50,status:'sent',friend:'张三',payMethod:null,date:'2025-01-15'},{id:2,title:'电影票',amount:60.00,status:'sent',friend:'李四',payMethod:null,date:'2025-01-14'},{id:3,title:'聚餐分摊',amount:128.00,status:'settled',friend:'王五',payMethod:'微信',date:'2025-01-13'},{id:4,title:'奶茶拼单',amount:18.00,status:'settled',friend:'张三',payMethod:'支付宝',date:'2025-01-12'},{id:5,title:'打车费',amount:42.00,status:'sent',friend:'王五',payMethod:null,date:'2025-01-16'}]);const friends =reactive([{id:1,name:'张三',phone:'138****1234'},{id:2,name:'李四',phone:'139****5678'},{id:3,name:'王五',phone:'136****9012'}]);
+const pageTitle =computed(()=>titles[activeTab.value]);const sentOrders =computed(()=>orders.filter(o =>o.status ==='sent'));const settledOrders =computed(()=>orders.filter(o =>o.status ==='settled'));const totalSettled =computed(()=>settledOrders.value.reduce((sum,o)=>sum +o.amount,0).toFixed(2));
+let nextOrderId =6;let nextFriendId =4;function switchTab(key){activeTab.value =key;}function openPayment(order){payingOrder.value =order;showPayment.value =true;}function handlePay(method){const idx =orders.findIndex(o =>o.id ===payingOrder.value.id);if (idx !==-1){orders[idx].status ='settled';orders[idx].payMethod =method;}showPayment.value =false;payingOrder.value =null;}function deleteOrder(id){const idx =orders.findIndex(o =>o.id ===id);if (idx !==-1){orders.splice(idx,1);}}function addOrder(){if (!newOrderTitle.value.trim()||!newOrderAmount.value ||!newOrderFriend.value)return;orders.push({id:nextOrderId++,title:newOrderTitle.value.trim(),amount:parseFloat(newOrderAmount.value),status:'sent',friend:newOrderFriend.value,payMethod:null,date:new Date().toISOString().slice(0,10)});newOrderTitle.value ='';newOrderAmount.value ='';newOrderFriend.value ='';showAddOrder.value =false;}function addFriend({name,phone }){friends.push({id:nextFriendId++,name,phone });}function deleteFriend(id){const idx =friends.findIndex(f =>f.id ===id);if (idx !==-1){friends.splice(idx,1);}}return {activeTab,pageTitle,sentOrders,settledOrders,totalSettled,friends,showPayment,payingOrder,showAddOrder,newOrderTitle,newOrderAmount,newOrderFriend,switchTab,openPayment,handlePay,deleteOrder,addOrder,addFriend,deleteFriend };}});
+app.component('bottom-nav',window.BottomNav);app.component('order-list',window.OrderList);app.component('friend-list',window.FriendList);app.component('payment-modal',window.PaymentModal);app.mount('#app');
+
+window.OrderList = {
+  props: ['orders', 'status'],
+  emits: ['settle', 'delete'],
+  template: `
+    <div class="order-list">
+      <div v-if="orders.length === 0" class="empty-state">
+        <span class="empty-icon">📭</span>
+        <p>{{ status === 'sent' ? '暂无待结算订单' : '暂无已结订单' }}</p>
+      </div>
+      <div v-for="order in orders" :key="order.id" class="order-card">
+        <div class="order-info">
+          <div class="order-title">{{ order.title }}</div>
+          <div class="order-meta">
+            <span class="order-friend">👤 {{ order.friend }}</span>
+            <span class="order-date">{{ order.date }}</span>
+          </div>
+          <div v-if="order.status === 'settled'" class="order-pay-method">
+            <span :class="order.payMethod === '微信' ? 'pay-wechat' : 'pay-alipay'">
+              {{ order.payMethod === '微信' ? '💚' : '💙' }} {{ order.payMethod }}
+            </span>
+          </div>
+        </div>
+        <div class="order-actions">
+          <span class="order-amount">¥{{ order.amount.toFixed(2) }}</span>
+          <button
+            v-if="status === 'sent'"
+            class="btn-settle"
+            @click="$emit('settle', order)"
+          >去结算</button>
+          <button
+            v-else
+            class="btn-done"
+            disabled
+          >已支付</button>
+          <button class="btn-delete" @click="$emit('delete', order.id)">✕</button>
+        </div>
+      </div>
+    </div>
+  `
+};
+
+
+window.FriendList = {
+  props: ['friends'],
+  emits: ['delete', 'add'],
+  template: `
+    <div class="friend-list">
+      <div v-if="friends.length === 0" class="empty-state">
+        <span class="empty-icon">👥</span>
+        <p>暂无好友</p>
+      </div>
+      <div v-for="friend in friends" :key="friend.id" class="friend-card">
+        <div class="friend-avatar">{{ friend.name[0] }}</div>
+        <div class="friend-info">
+          <div class="friend-name">{{ friend.name }}</div>
+          <div class="friend-phone">{{ friend.phone }}</div>
+        </div>
+        <button class="btn-delete" @click="$emit('delete', friend.id)">✕</button>
+      </div>
+
+      <!-- 添加好友表单 -->
+      <div class="add-form">
+        <h4>添加好友</h4>
+        <input v-model="newName" placeholder="好友姓名" class="form-input" />
+        <input v-model="newPhone" placeholder="手机号" class="form-input" />
+        <button class="btn-primary" @click="handleAdd">添加</button>
+      </div>
+    </div>
+  `,
+  setup(props, { emit }) {
+    const newName = Vue.ref('');
+    const newPhone = Vue.ref('');
+
+    function handleAdd() {
+      if (!newName.value.trim()) return;
+      emit('add', { name: newName.value.trim(), phone: newPhone.value.trim() || '未填写' });
+      newName.value = '';
+      newPhone.value = '';
+    }
+
+    return { newName, newPhone, handleAdd };
+  }
+};
+
+
+window.PaymentModal = {
+  props: ['visible', 'order'],
+  emits: ['pay', 'close'],
+  template: `
+    <div v-if="visible" class="modal-overlay" @click.self="$emit('close')">
+      <div class="modal-card">
+        <h3>选择支付方式</h3>
+        <p class="modal-order-info" v-if="order">
+          订单：{{ order.title }}<br>
+          金额：<strong>¥{{ order.amount.toFixed(2) }}</strong>
+        </p>
+        <div class="pay-options">
+          <div class="pay-option pay-wechat" @click="$emit('pay', '微信')">
+            <span class="pay-icon">💚</span>
+            <span class="pay-name">微信支付</span>
+          </div>
+          <div class="pay-option pay-alipay" @click="$emit('pay', '支付宝')">
+            <span class="pay-icon">💙</span>
+            <span class="pay-name">支付宝</span>
+          </div>
+        </div>
+        <button class="btn-cancel" @click="$emit('close')">取消</button>
+      </div>
+    </div>
+  `
+};
+
+
+window.BottomNav = {
+  props: ['activeTab'],
+  emits: ['tab-change'],
+  template: `
+    <nav class="bottom-nav">
+      <div
+        v-for="tab in tabs"
+        :key="tab.key"
+        class="nav-item"
+        :class="{ active: activeTab === tab.key }"
+        @click="$emit('tab-change', tab.key)"
+      >
+        <span class="nav-icon" v-html="tab.icon"></span>
+        <span class="nav-label">{{ tab.label }}</span>
+      </div>
+    </nav>
+  `,
+  setup() {
+    const tabs = [
+      { key: 'sent',    label: '已发单', icon: '📤' },
+      { key: 'settled', label: '已结单', icon: '✅' },
+      { key: 'friends', label: '好友',   icon: '👥' },
+      { key: 'me',      label: '我的',   icon: '👤' }
+    ];
+    return { tabs };
+  }
+};
+        } catch (e) {
+            console.error('[WebToApp] JS execution error:', e);
         }
+    }
 
-        function sendMessage() {
-            var messageInput = document.getElementById('message-input');
-            var message = messageInput.value.trim();
-            
-            if (message === '') {
-                return;
-            }
-            
-            var username = document.getElementById('username-input').value.trim();
-            
-            stompClient.send("/app/chat.send", {}, JSON.stringify({
-                'from': username,
-                'text': message,
-                'type': 'CHAT'
-            }));
-            
-            messageInput.value = '';
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+        initApp();
+    }
+})();
+</script>
+<script>
+/* Inlined JS */
+(function() {
+    'use strict';
+
+    function initApp() {
+        try {
+const {createApp,reactive,ref,computed }=Vue;const app =createApp({template:`
+    <div class="app-container">
+      <header class="top-bar">
+        <h1>{{ pageTitle }}</h1>
+      </header>
+
+      <main class="page-content">
+        <!-- 已发单 -->
+        <div v-if="activeTab === 'sent'">
+          <div class="tab-header">
+            <span>待结算订单 ({{ sentOrders.length }})</span>
+            <button class="btn-add" @click="showAddOrder = true">+ 新建</button>
+          </div>
+          <order-list
+            :orders="sentOrders"
+            status="sent"
+            @settle="openPayment"
+            @delete="deleteOrder"
+          />
+        </div>
+
+        <!-- 已结单 -->
+        <div v-if="activeTab === 'settled'">
+          <div class="tab-header">
+            <span>已完成订单 ({{ settledOrders.length }})</span>
+          </div>
+          <order-list
+            :orders="settledOrders"
+            status="settled"
+            @delete="deleteOrder"
+          />
+        </div>
+
+        <!-- 好友列表 -->
+        <div v-if="activeTab === 'friends'">
+          <friend-list
+            :friends="friends"
+            @add="addFriend"
+            @delete="deleteFriend"
+          />
+        </div>
+
+        <!-- 我的 -->
+        <div v-if="activeTab === 'me'">
+          <div class="profile-card">
+            <div class="profile-avatar">🧑</div>
+            <div class="profile-name">用户</div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-num">{{ sentOrders.length }}</span>
+              <span class="stat-label">待结算</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">{{ settledOrders.length }}</span>
+              <span class="stat-label">已完成</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">{{ friends.length }}</span>
+              <span class="stat-label">好友数</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">¥{{ totalSettled }}</span>
+              <span class="stat-label">总金额</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <bottom-nav
+        :activeTab="activeTab"
+        @tab-change="switchTab"
+      />
+
+      <payment-modal
+        :visible="showPayment"
+        :order="payingOrder"
+        @pay="handlePay"
+        @close="showPayment = false"
+      />
+
+      <!-- 新建订单弹窗 -->
+      <div v-if="showAddOrder" class="modal-overlay" @click.self="showAddOrder = false">
+        <div class="modal-card">
+          <h3>新建订单</h3>
+          <input v-model="newOrderTitle" placeholder="订单名称" class="form-input" />
+          <input v-model="newOrderAmount" placeholder="金额" type="number" class="form-input" />
+          <select v-model="newOrderFriend" class="form-input">
+            <option value="">选择好友</option>
+            <option v-for="f in friends" :key="f.id" :value="f.name">{{ f.name }}</option>
+          </select>
+          <div class="modal-btns">
+            <button class="btn-cancel" @click="showAddOrder = false">取消</button>
+            <button class="btn-primary" @click="addOrder">确认</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,setup(){
+const titles ={sent:'已发单',settled:'已结单',friends:'好友列表',me:'我的'};
+const activeTab =ref('sent');const showPayment =ref(false);const payingOrder =ref(null);const showAddOrder =ref(false);const newOrderTitle =ref('');const newOrderAmount =ref('');const newOrderFriend =ref('');const orders =reactive([{id:1,title:'午餐AA',amount:35.50,status:'sent',friend:'张三',payMethod:null,date:'2025-01-15'},{id:2,title:'电影票',amount:60.00,status:'sent',friend:'李四',payMethod:null,date:'2025-01-14'},{id:3,title:'聚餐分摊',amount:128.00,status:'settled',friend:'王五',payMethod:'微信',date:'2025-01-13'},{id:4,title:'奶茶拼单',amount:18.00,status:'settled',friend:'张三',payMethod:'支付宝',date:'2025-01-12'},{id:5,title:'打车费',amount:42.00,status:'sent',friend:'王五',payMethod:null,date:'2025-01-16'}]);const friends =reactive([{id:1,name:'张三',phone:'138****1234'},{id:2,name:'李四',phone:'139****5678'},{id:3,name:'王五',phone:'136****9012'}]);
+const pageTitle =computed(()=>titles[activeTab.value]);const sentOrders =computed(()=>orders.filter(o =>o.status ==='sent'));const settledOrders =computed(()=>orders.filter(o =>o.status ==='settled'));const totalSettled =computed(()=>settledOrders.value.reduce((sum,o)=>sum +o.amount,0).toFixed(2));
+let nextOrderId =6;let nextFriendId =4;function switchTab(key){activeTab.value =key;}function openPayment(order){payingOrder.value =order;showPayment.value =true;}function handlePay(method){const idx =orders.findIndex(o =>o.id ===payingOrder.value.id);if (idx !==-1){orders[idx].status ='settled';orders[idx].payMethod =method;}showPayment.value =false;payingOrder.value =null;}function deleteOrder(id){const idx =orders.findIndex(o =>o.id ===id);if (idx !==-1){orders.splice(idx,1);}}function addOrder(){if (!newOrderTitle.value.trim()||!newOrderAmount.value ||!newOrderFriend.value)return;orders.push({id:nextOrderId++,title:newOrderTitle.value.trim(),amount:parseFloat(newOrderAmount.value),status:'sent',friend:newOrderFriend.value,payMethod:null,date:new Date().toISOString().slice(0,10)});newOrderTitle.value ='';newOrderAmount.value ='';newOrderFriend.value ='';showAddOrder.value =false;}function addFriend({name,phone }){friends.push({id:nextFriendId++,name,phone });}function deleteFriend(id){const idx =friends.findIndex(f =>f.id ===id);if (idx !==-1){friends.splice(idx,1);}}return {activeTab,pageTitle,sentOrders,settledOrders,totalSettled,friends,showPayment,payingOrder,showAddOrder,newOrderTitle,newOrderAmount,newOrderFriend,switchTab,openPayment,handlePay,deleteOrder,addOrder,addFriend,deleteFriend };}});
+app.component('bottom-nav',window.BottomNav);app.component('order-list',window.OrderList);app.component('friend-list',window.FriendList);app.component('payment-modal',window.PaymentModal);app.mount('#app');
+
+window.OrderList = {
+  props: ['orders', 'status'],
+  emits: ['settle', 'delete'],
+  template: `
+    <div class="order-list">
+      <div v-if="orders.length === 0" class="empty-state">
+        <span class="empty-icon">📭</span>
+        <p>{{ status === 'sent' ? '暂无待结算订单' : '暂无已结订单' }}</p>
+      </div>
+      <div v-for="order in orders" :key="order.id" class="order-card">
+        <div class="order-info">
+          <div class="order-title">{{ order.title }}</div>
+          <div class="order-meta">
+            <span class="order-friend">👤 {{ order.friend }}</span>
+            <span class="order-date">{{ order.date }}</span>
+          </div>
+          <div v-if="order.status === 'settled'" class="order-pay-method">
+            <span :class="order.payMethod === '微信' ? 'pay-wechat' : 'pay-alipay'">
+              {{ order.payMethod === '微信' ? '💚' : '💙' }} {{ order.payMethod }}
+            </span>
+          </div>
+        </div>
+        <div class="order-actions">
+          <span class="order-amount">¥{{ order.amount.toFixed(2) }}</span>
+          <button
+            v-if="status === 'sent'"
+            class="btn-settle"
+            @click="$emit('settle', order)"
+          >去结算</button>
+          <button
+            v-else
+            class="btn-done"
+            disabled
+          >已支付</button>
+          <button class="btn-delete" @click="$emit('delete', order.id)">✕</button>
+        </div>
+      </div>
+    </div>
+  `
+};
+
+
+window.FriendList = {
+  props: ['friends'],
+  emits: ['delete', 'add'],
+  template: `
+    <div class="friend-list">
+      <div v-if="friends.length === 0" class="empty-state">
+        <span class="empty-icon">👥</span>
+        <p>暂无好友</p>
+      </div>
+      <div v-for="friend in friends" :key="friend.id" class="friend-card">
+        <div class="friend-avatar">{{ friend.name[0] }}</div>
+        <div class="friend-info">
+          <div class="friend-name">{{ friend.name }}</div>
+          <div class="friend-phone">{{ friend.phone }}</div>
+        </div>
+        <button class="btn-delete" @click="$emit('delete', friend.id)">✕</button>
+      </div>
+
+      <!-- 添加好友表单 -->
+      <div class="add-form">
+        <h4>添加好友</h4>
+        <input v-model="newName" placeholder="好友姓名" class="form-input" />
+        <input v-model="newPhone" placeholder="手机号" class="form-input" />
+        <button class="btn-primary" @click="handleAdd">添加</button>
+      </div>
+    </div>
+  `,
+  setup(props, { emit }) {
+    const newName = Vue.ref('');
+    const newPhone = Vue.ref('');
+
+    function handleAdd() {
+      if (!newName.value.trim()) return;
+      emit('add', { name: newName.value.trim(), phone: newPhone.value.trim() || '未填写' });
+      newName.value = '';
+      newPhone.value = '';
+    }
+
+    return { newName, newPhone, handleAdd };
+  }
+};
+
+
+window.PaymentModal = {
+  props: ['visible', 'order'],
+  emits: ['pay', 'close'],
+  template: `
+    <div v-if="visible" class="modal-overlay" @click.self="$emit('close')">
+      <div class="modal-card">
+        <h3>选择支付方式</h3>
+        <p class="modal-order-info" v-if="order">
+          订单：{{ order.title }}<br>
+          金额：<strong>¥{{ order.amount.toFixed(2) }}</strong>
+        </p>
+        <div class="pay-options">
+          <div class="pay-option pay-wechat" @click="$emit('pay', '微信')">
+            <span class="pay-icon">💚</span>
+            <span class="pay-name">微信支付</span>
+          </div>
+          <div class="pay-option pay-alipay" @click="$emit('pay', '支付宝')">
+            <span class="pay-icon">💙</span>
+            <span class="pay-name">支付宝</span>
+          </div>
+        </div>
+        <button class="btn-cancel" @click="$emit('close')">取消</button>
+      </div>
+    </div>
+  `
+};
+
+
+window.BottomNav = {
+  props: ['activeTab'],
+  emits: ['tab-change'],
+  template: `
+    <nav class="bottom-nav">
+      <div
+        v-for="tab in tabs"
+        :key="tab.key"
+        class="nav-item"
+        :class="{ active: activeTab === tab.key }"
+        @click="$emit('tab-change', tab.key)"
+      >
+        <span class="nav-icon" v-html="tab.icon"></span>
+        <span class="nav-label">{{ tab.label }}</span>
+      </div>
+    </nav>
+  `,
+  setup() {
+    const tabs = [
+      { key: 'sent',    label: '已发单', icon: '📤' },
+      { key: 'settled', label: '已结单', icon: '✅' },
+      { key: 'friends', label: '好友',   icon: '👥' },
+      { key: 'me',      label: '我的',   icon: '👤' }
+    ];
+    return { tabs };
+  }
+};
+        } catch (e) {
+            console.error('[WebToApp] JS execution error:', e);
         }
+    }
 
-        // 显示消息
-        function showMessage(message) {
-            var messagesDiv = document.getElementById('messages');
-            var messageElement = document.createElement('div');
-            
-            var className = 'message ';
-            var text = '';
-            // 状态：加入、离开、聊天
-            switch(message.type) {
-                case 'JOIN':
-                    className += 'join-message';
-                    text = message.from + ' 加入了聊天室';
-                    break;
-                case 'LEAVE':
-                    className += 'leave-message';
-                    text = message.from + ' 离开了聊天室';
-                    break;
-                case 'CHAT':
-                    className += 'chat-message';
-                    text = '<strong>' + message.from + ':</strong> ' + message.text;
-                    if (message.time) {
-                        text += ' <small>(' + message.time + ')</small>';
-                    }
-                    break;
-                default:
-                    className += 'message';
-                    text = message.text;
-            }
-            
-            messageElement.className = className;
-            messageElement.innerHTML = text;
-            messagesDiv.appendChild(messageElement);
-            
-            // 自动滚动到底部
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-
-        // 表单提交事件监听
-        document.getElementById('message-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            if (connected) {
-                sendMessage();
-            }
-        });
-    </script>
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+        initApp();
+    }
+})();
+</script>
 </body>
 </html>
