@@ -1,0 +1,14 @@
+{
+  "name": "srayons-pages-tools",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "srayons.github.io 的 HTML 压缩 / 加壳构建工具",
+  "scripts": {
+    "build": "node build.mjs",
+    "build:shell": "node build.mjs --shell"
+  },
+  "devDependencies": {
+    "html-minifier-terser": "^7.2.0"
+  }
+}

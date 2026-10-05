@@ -1,0 +1,2746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RecOns — 免字幕屏幕录制软件 · 免费下载</title>
+  <script src="https://aisearch-task.bj.bcebos.com/static/tailwindcss-3.4.17.js"></script>
+  <style>
+    :root {
+      --brand-rgb: 99, 102, 241;
+      --brand-color: #6366f1;
+      --accent-rgb: 168, 85, 247;
+      --accent-color: #a855f7;
+      --card-bg: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'PingFang SC', 'HarmonyOS Sans SC', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 40%, #faf5ff 100%);
+      color: #1e1b4b;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    /* 导航栏 */
+    .nav-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.08);
+    }
+
+    /* 动画 */
+    @keyframes floatY {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-12px);
+      }
+    }
+
+    @keyframes pulseRing {
+      0% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.5);
+      }
+
+      70% {
+        box-shadow: 0 0 0 20px rgba(99, 102, 241, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+      }
+    }
+
+    @keyframes recPulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideLeft {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes countBar {
+      from {
+        width: 0;
+      }
+    }
+
+    .float-anim {
+      animation: floatY 4s ease-in-out infinite;
+    }
+
+    .rec-dot {
+      animation: recPulse 1.2s ease-in-out infinite;
+    }
+
+    .pulse-ring {
+      animation: pulseRing 2s infinite;
+    }
+
+    .hero-title {
+      animation: slideUp 0.8s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    .hero-sub {
+      animation: slideUp 0.8s cubic-bezier(.2, .8, .2, 1) 0.15s both;
+    }
+
+    .hero-cta {
+      animation: slideUp 0.8s cubic-bezier(.2, .8, .2, 1) 0.3s both;
+    }
+
+    .hero-mockup {
+      animation: slideLeft 1s cubic-bezier(.2, .8, .2, 1) 0.2s both;
+    }
+
+    .stagger-item {
+      opacity: 0;
+      animation: slideUp 0.7s cubic-bezier(.2, .8, .2, 1) forwards;
+    }
+
+    /* 按钮 */
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 16px 36px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(99, 102, 241, 0.5);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-ghost {
+      background: #fff;
+      color: #6366f1;
+      border: 1.5px solid rgba(99, 102, 241, 0.25);
+      border-radius: 14px;
+      padding: 14px 30px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-ghost:hover {
+      border-color: #6366f1;
+      background: #f5f3ff;
+    }
+
+    /* 功能卡片 */
+    .feature-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 32px 28px;
+      border: 1px solid rgba(99, 102, 241, 0.08);
+      transition: all 0.4s cubic-bezier(.2, .8, .2, 1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .feature-card p {
+      flex: 1;
+      margin-top: auto;
+    }
+
+    .feature-card .feature-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      min-height: 28px;
+    }
+
+    .feature-card .feature-title-row h3 {
+      margin: 0;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #6366f1, #a855f7);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.2);
+    }
+
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+      margin-bottom: 20px;
+    }
+
+    /* 录屏界面模拟 */
+    .mock-frame {
+      background: #1e1b4b;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(30, 27, 75, 0.25), 0 10px 30px rgba(99, 102, 241, 0.2);
+    }
+
+    .mock-titlebar {
+      background: #0f0c29;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .mock-canvas {
+      background: linear-gradient(135deg, #312e81 0%, #4c1d95 50%, #581c87 100%);
+      aspect-ratio: 16/10;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 录制控制条 */
+    .rec-bar {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 12, 41, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 50px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .rec-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ef4444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+    }
+
+    .rec-btn-inner {
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 3px;
+    }
+
+    /* 录制区域框选 */
+    .record-frame {
+      position: absolute;
+      border: 2px dashed #fbbf24;
+      border-radius: 4px;
+      top: 15%;
+      left: 12%;
+      width: 60%;
+      height: 55%;
+    }
+
+    .record-frame::before,
+    .record-frame::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border: 3px solid #fbbf24;
+    }
+
+    .record-frame::before {
+      top: -3px;
+      left: -3px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .record-frame::after {
+      bottom: -3px;
+      right: -3px;
+      border-left: none;
+      border-top: none;
+    }
+
+    /* 悬浮提示卡 */
+    .float-card {
+      position: absolute;
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* 数据卡 */
+    .stat-card {
+      text-align: center;
+      padding: 24px 16px;
+    }
+
+    .stat-num {
+      font-size: 42px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    /* 平台下载卡 */
+    .platform-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 28px;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+      cursor: pointer;
+      text-align: center;
+      position: relative;
+    }
+
+    .platform-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(99, 102, 241, 0.12);
+    }
+
+    .platform-card.recommended {
+      border-color: #6366f1;
+      background: linear-gradient(135deg, #f5f3ff 0%, #faf5ff 100%);
+    }
+
+    .platform-card.recommended::before {
+      content: '推荐';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      color: #fff;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* FAQ */
+    details {
+      background: #fff;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(99, 102, 241, 0.08);
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    details[open] {
+      border-color: rgba(99, 102, 241, 0.2);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.08);
+    }
+
+    summary {
+      padding: 20px 24px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::after {
+      content: '+';
+      font-size: 24px;
+      color: #6366f1;
+      font-weight: 300;
+      transition: transform 0.3s;
+    }
+
+    details[open] summary::after {
+      transform: rotate(45deg);
+    }
+
+    details>div {
+      padding: 0 24px 20px;
+      color: #4b5563;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: #1e1b4b;
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 200;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(.2, .8, .2, 1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* 评价卡 */
+    .review-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      border: 1px solid rgba(99, 102, 241, 0.08);
+    }
+
+    /* 场景标签 */
+    .scene-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 50px;
+      background: rgba(99, 102, 241, 0.08);
+      color: #6366f1;
+      font-size: 14px;
+      font-weight: 500;
+      margin: 4px;
+    }
+
+    /* 摄像头画中画模拟 */
+    .pip-cam {
+      position: absolute;
+      bottom: 80px;
+      right: 16px;
+      width: 120px;
+      height: 90px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      border: 3px solid #fff;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .pip-cam::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -60%);
+    }
+
+    /* 画笔标注线 */
+    .anno-line {
+      position: absolute;
+      background: #fbbf24;
+      height: 3px;
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+    }
+
+    .anno-arrow {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 12px solid #ef4444;
+    }
+
+    /* 章节标题 */
+    .section-label {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 50px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+      color: #6366f1;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 36px;
+      font-weight: 800;
+      color: #1e1b4b;
+      line-height: 1.2;
+      margin: 0 0 16px;
+    }
+
+    .section-desc {
+      font-size: 17px;
+      color: #6b7280;
+      line-height: 1.7;
+      max-width: 600px;
+      margin: 0;
+    }
+
+    /* 时间线步骤 */
+    .step-line {
+      position: relative;
+      padding-left: 48px;
+    }
+
+    .step-line::before {
+      content: '';
+      position: absolute;
+      left: 18px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: linear-gradient(to bottom, #6366f1, rgba(168, 85, 247, 0.2));
+    }
+
+    .step-num {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+    }
+
+    /* 鼠标光标模拟 */
+    .cursor-mock {
+      position: absolute;
+      top: 40%;
+      left: 35%;
+      font-size: 24px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    /* 波形 */
+    .wave-bar {
+      display: inline-block;
+      width: 3px;
+      margin: 0 1px;
+      background: #10b981;
+      border-radius: 2px;
+      animation: wave 1s ease-in-out infinite;
+    }
+
+    @keyframes wave {
+
+      0%,
+      100% {
+        height: 6px;
+      }
+
+      50% {
+        height: 18px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .section-title {
+        font-size: 28px;
+      }
+
+      .stat-num {
+        font-size: 32px;
+      }
+    }
+
+    /* ====== 二维码支付弹框 ====== */
+    body.qr-open { overflow: hidden; }
+
+    .qr-mask {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; visibility: hidden;
+      transition: opacity .3s, visibility .3s;
+      z-index: 1000; padding: 20px;
+    }
+    .qr-mask.active { opacity: 1; visibility: visible; }
+
+    .qr-modal {
+      width: 400px; max-width: 100%; background: #fff;
+      border-radius: 20px; overflow: hidden;
+      box-shadow: 0 25px 70px rgba(0,0,0,.35);
+      transform: scale(.88) translateY(16px);
+      transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+      position: relative;
+    }
+    .qr-mask.active .qr-modal { transform: scale(1) translateY(0); }
+
+    .qr-modal-header {
+      position: relative; padding: 24px 24px 0; text-align: center;
+    }
+    .qr-modal-header h3 {
+      font-size: 20px; font-weight: 700; color: #1e1b4b; margin-bottom: 4px;
+    }
+    .qr-modal-header .sub { font-size: 13px; color: #8b8b9b; }
+    .qr-close {
+      position: absolute; top: 14px; right: 14px;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #f5f5f7; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all .2s;
+    }
+    .qr-close:hover { background: #eee; transform: rotate(90deg); }
+    .qr-close svg { width: 16px; height: 16px; color: #555; }
+
+    /* 支付方式 tab */
+    .qr-tabs {
+      display: flex; gap: 8px; padding: 18px 24px 0;
+    }
+    .qr-tab {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px;
+      padding: 10px 6px; border-radius: 12px; border: 2px solid transparent;
+      background: #f7f7fa; cursor: pointer; transition: all .25s;
+    }
+    .qr-tab .qr-tab-icon {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; transition: all .25s;
+    }
+    .qr-tab .qr-tab-name { font-size: 12px; font-weight: 500; color: #666; }
+
+    .qr-tab.wx .qr-tab-icon { background: #e8f7ee; }
+    .qr-tab.wx.active { background:#fff; border-color:#07c160; box-shadow:0 4px 14px rgba(7,193,96,.2); }
+    .qr-tab.wx.active .qr-tab-icon { background:#07c160; }
+    .qr-tab.wx.active .qr-tab-icon svg { color:#fff; }
+    .qr-tab.wx.active .qr-tab-name { color:#07c160; font-weight:600; }
+
+    .qr-tab.zfb .qr-tab-icon { background: #e6f2ff; }
+    .qr-tab.zfb.active { background:#fff; border-color:#1677ff; box-shadow:0 4px 14px rgba(22,119,255,.2); }
+    .qr-tab.zfb.active .qr-tab-icon { background:#1677ff; }
+    .qr-tab.zfb.active .qr-tab-icon svg { color:#fff; }
+    .qr-tab.zfb.active .qr-tab-name { color:#1677ff; font-weight:600; }
+
+    .qr-tab.ysf .qr-tab-icon { background: #fde8ea; }
+    .qr-tab.ysf.active { background:#fff; border-color:#e21836; box-shadow:0 4px 14px rgba(226,24,54,.2); }
+    .qr-tab.ysf.active .qr-tab-icon { background:#e21836; }
+    .qr-tab.ysf.active .qr-tab-icon svg { color:#fff; }
+    .qr-tab.ysf.active .qr-tab-name { color:#e21836; font-weight:600; }
+
+    /* 二维码区域 */
+    .qr-code-panel { padding: 20px 24px; }
+    .qr-code-wrap { position: relative; width: 220px; margin: 0 auto; }
+    .qr-code-card {
+      position: relative; aspect-ratio: 1/1; border-radius: 14px; padding: 12px;
+      display: flex; align-items: center; justify-content: center; transition: all .3s;
+    }
+    .qr-code-card.wx-card { background: linear-gradient(135deg,#f0faf4,#e8f7ee); border:2px solid #c9ecd6; }
+    .qr-code-card.zfb-card { background: linear-gradient(135deg,#f0f6ff,#e6f2ff); border:2px solid #c9dfff; }
+    .qr-code-card.ysf-card { background: linear-gradient(135deg,#fff2f4,#fde8ea); border:2px solid #fdc9cf; }
+
+    .qr-real-img-wrap {
+      width: 100%; height: 100%; border-radius: 8px; background: #fff;
+      overflow: hidden; position: relative;
+    }
+    .qr-real-img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block; transform-origin: center center;
+      will-change: transform;
+    }
+    /* 微信赞赏码：核心福字二维码约占原图 34%，放大 2.5 倍填满白底 */
+    .qr-real-img.wx-img { transform: scale(2.5); position: relative; top: 34%; }
+    /* 支付宝收款码：白色二维码块约占原图 79%，放大 2 倍填满白底 */
+    .qr-real-img.zfb-img { transform: scale(2); object-position: center 79%; }
+
+    /* 云闪付 CSS 伪二维码样式 */
+    .qr-fake-grid {
+      width: 100%; height: 100%; background: #fff; border-radius: 8px;
+      padding: 8px; display: none;
+      grid-template-columns: repeat(25,1fr);
+      grid-template-rows: repeat(25,1fr);
+      gap: 1.5px;
+    }
+    .qr-fake-grid.show { display: grid; }
+    .qr-fake-cell { border-radius: 1px; }
+    .qr-fake-cell.b { background: #1a1a2e; }
+    .qr-corner {
+      position: absolute; width: 32px; height: 32px;
+      border: 4px solid #1a1a2e; border-radius: 5px; background: #fff;
+      display: none;
+    }
+    .qr-corner::after {
+      content:''; position:absolute; inset:4px;
+      background:#1a1a2e; border-radius:2px;
+    }
+    .qr-corner.show { display: block; }
+    .qr-corner.tl { top:22px; left:22px; }
+    .qr-corner.tr { top:22px; right:22px; }
+    .qr-corner.bl { bottom:22px; left:22px; }
+    .qr-center-logo {
+      position: absolute; width: 42px; height: 42px; border-radius: 10px;
+      display: none; align-items: center; justify-content: center;
+      background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,.15); z-index: 4;
+    }
+    .qr-center-logo.show { display: flex; }
+    .qr-center-logo svg { width: 28px; height: 28px; }
+    .qr-center-logo.ysf-logo { color: #e21836; }
+
+    .qr-scan-line {
+      position: absolute; left: 14px; right: 14px; height: 2px;
+      background: linear-gradient(90deg,transparent,rgba(30,136,229,.75),transparent);
+      box-shadow: 0 0 10px rgba(30,136,229,.6);
+      top: 14px; animation: qrScan 2.2s linear infinite; border-radius: 2px; z-index: 3;
+      pointer-events: none;
+    }
+    @keyframes qrScan {
+      0%{top:14px;} 50%{top:calc(100% - 16px);} 100%{top:14px;}
+    }
+
+    .qr-amount-text {
+      text-align: center; margin-top: 14px; font-size: 24px; font-weight: 700;
+    }
+    .qr-amount-text.wx-c { color: #07c160; }
+    .qr-amount-text.zfb-c { color: #1677ff; }
+    .qr-amount-text.ysf-c { color: #e21836; }
+    .qr-tip-text {
+      text-align: center; margin-top: 4px; font-size: 13px; color: #888;
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+
+    .qr-confirm-btn {
+      display: block; width: 100%; margin-top: 16px;
+      padding: 13px; border: none; border-radius: 12px; cursor: pointer;
+      font-size: 15px; font-weight: 600; color: #fff; transition: all .25s;
+    }
+    .qr-confirm-btn.wx-btn { background: linear-gradient(135deg,#07c160,#06ad56); box-shadow: 0 6px 18px rgba(7,193,96,.3); }
+    .qr-confirm-btn.zfb-btn { background: linear-gradient(135deg,#1677ff,#0958d9); box-shadow: 0 6px 18px rgba(22,119,255,.3); }
+    .qr-confirm-btn.ysf-btn { background: linear-gradient(135deg,#e21836,#c8102e); box-shadow: 0 6px 18px rgba(226,24,54,.3); }
+    .qr-confirm-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    .qr-confirm-btn:disabled { opacity: .7; cursor: not-allowed; transform: none; }
+
+    /* 支付成功页 */
+    .qr-success {
+      padding: 28px 24px 32px; text-align: center; display: none;
+    }
+    .qr-success.show { display: block; animation: slideUp .4s cubic-bezier(.2,.8,.2,1) both; }
+    .qr-check-circle {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg,#10b981,#059669);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+      animation: popIn .5s cubic-bezier(.34,1.56,.64,1) both;
+      box-shadow: 0 10px 24px rgba(16,185,129,.35);
+    }
+    @keyframes popIn {
+      0%{transform:scale(0);} 60%{transform:scale(1.15);} 100%{transform:scale(1);}
+    }
+    .qr-check-circle svg { width: 36px; height: 36px; color: #fff; }
+    .qr-success h4 { font-size: 20px; font-weight: 700; color:#1e1b4b; margin-bottom: 6px; }
+    .qr-success .s-amount { font-size: 28px; font-weight: 800; margin: 10px 0;
+      background: linear-gradient(135deg,#10b981,#059669);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .qr-success .s-msg { font-size: 14px; color: #6b7280; line-height: 1.7; margin-bottom: 20px; }
+    .qr-success-close {
+      padding: 12px 32px; border: none; border-radius: 60px; cursor: pointer;
+      background: linear-gradient(135deg,#6366f1,#a855f7); color: #fff;
+      font-size: 15px; font-weight: 600; box-shadow: 0 8px 20px rgba(99,102,241,.35);
+      transition: all .2s;
+    }
+    .qr-success-close:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(99,102,241,.45); }
+
+    @media (max-width: 480px) {
+      .qr-modal { border-radius: 16px; }
+      .qr-code-wrap { width: 200px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 导航栏 -->
+  <nav class="nav-bar">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+          style="background: linear-gradient(135deg,#6366f1,#a855f7);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" fill="#fff" />
+            <path d="M10 8l6 4-6 4V8z" fill="#6366f1" />
+          </svg>
+        </div>
+        <span class="text-lg font-bold" style="color:#1e1b4b;">RecOns <span
+            class="text-sm font-normal text-gray-400 ml-1">Beta</span></span>
+      </div>
+      <div class="hidden md:flex items-center gap-7 text-[15px]" style="color:#4b5563;">
+        <a href="#features" class="hover:text-indigo-600 transition">功能特色</a>
+        <a href="#showcase" class="hover:text-indigo-600 transition">界面预览</a>
+        <a href="#compare" class="hover:text-indigo-600 transition">版本对比</a>
+        <a href="#donate" class="hover:text-indigo-600 transition">支持我们</a>
+        <a href="#reviews" class="hover:text-indigo-600 transition">用户评价</a>
+        <a href="#faq" class="hover:text-indigo-600 transition">常见问题</a>
+      </div>
+      <button class="btn-primary" style="padding:10px 22px; font-size:14px;" onclick="startDownload('Windows','免费版')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+        </svg>
+        免费下载
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero 首屏 -->
+  <section class="pt-32 pb-20 px-6 relative overflow-hidden">
+    <!-- 背景装饰 -->
+    <div class="absolute top-0 right-0 w-[600px] h-[600px] rounded-full opacity-20 blur-3xl"
+      style="background:radial-gradient(circle,#a855f7,transparent);"></div>
+    <div class="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full opacity-15 blur-3xl"
+      style="background:radial-gradient(circle,#6366f1,transparent);"></div>
+
+    <div class="max-w-7xl mx-auto relative">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <!-- 左：文案 -->
+        <div>
+          <div class="hero-title">
+            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold mb-6"
+              style="background:rgba(99,102,241,0.1);color:#6366f1;">
+              <span class="rec-dot w-2 h-2 rounded-full bg-red-500"></span>
+              v0.3.1 全新版本发布
+            </span>
+            <h1 class="text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] mb-6" style="color:#1e1b4b;">
+              一键录制<br>
+              <span
+                style="background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">精彩每一刻</span>
+            </h1>
+            <p class="hero-sub text-lg md:text-xl mb-8 leading-relaxed" style="color:#6b7280;">
+              以 <strong>语音识别</strong> 为核心的屏幕录制软件，录制时实时生成字幕。开源基础版可免费体验完整录屏与字幕能力，Life 生活版解锁无水印、画笔标注、AI
+              降噪等创作能力，网课、教程字幕制作效率提升 30%。
+            </p>
+          </div>
+          <div class="hero-cta flex flex-wrap gap-4 items-center">
+            <button class="btn-primary pulse-ring" style="padding:18px 40px; font-size:17px;"
+              onclick="startDownload('Windows','最新版 v0.3.1')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+              </svg>
+              免费下载 · Windows
+            </button>
+            <button class="btn-ghost" onclick="document.getElementById('compare').scrollIntoView({behavior:'smooth'})">
+              版本对比
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+          </div>
+          <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm" style="color:#6b7280;">
+            <div class="flex items-center gap-1.5">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#10b981">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+              </svg>
+              永久免费开源
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#10b981">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+              </svg>
+              AI 字幕识别
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#10b981">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+              </svg>
+              无捆绑插件
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#10b981">
+                <path
+                  d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.38 7.86 10.9.58.1.79-.25.79-.55v-2c-3.2.7-3.88-1.36-3.88-1.36-.52-1.32-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.67 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.17.91-.25 1.89-.38 2.86-.39.97.01 1.95.14 2.86.39 2.19-1.48 3.15-1.17 3.15-1.17.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.4-2.69 5.37-5.25 5.66.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.8.55C20.21 21.37 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z" />
+              </svg>
+              GitHub、Gitee 开源
+            </div>
+          </div>
+        </div>
+
+        <!-- 右：软件界面模拟 -->
+        <div class="hero-mockup relative">
+          <div class="mock-frame float-anim">
+            <div class="mock-titlebar">
+              <div class="dot" style="background:#ef4444;"></div>
+              <div class="dot" style="background:#f59e0b;"></div>
+              <div class="dot" style="background:#10b981;"></div>
+              <div class="flex-1 text-center text-xs" style="color:rgba(255,255,255,0.5);">RecOns — 正在录制</div>
+              <div class="flex items-center gap-1 text-xs" style="color:#ef4444;">
+                <span class="rec-dot w-2 h-2 rounded-full bg-red-500"></span> REC 00:11:37
+              </div>
+            </div>
+            <div class="mock-canvas">
+              <!-- 模拟桌面内容 -->
+              <div class="absolute inset-0 flex items-center justify-center opacity-30">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="#fff">
+                  <path
+                    d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z" />
+                </svg>
+              </div>
+
+              <!-- 录制框选区域 -->
+              <div class="record-frame">
+                <div class="absolute -top-8 left-0 text-xs text-yellow-400 font-semibold flex items-center gap-1.5">
+                  <span class="rec-dot w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                  录制区域 · 1920×1060
+                </div>
+              </div>
+
+              <!-- 画笔标注 -->
+              <div class="anno-line" style="top:28%;left:18%;width:80px;transform:rotate(-8deg);"></div>
+              <div class="anno-arrow" style="top:38%;left:48%;"></div>
+              <div class="absolute text-xs font-bold text-red-400" style="top:42%;left:50%;">重点区域</div>
+
+              <!-- 鼠标 -->
+              <div class="cursor-mock">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="white" stroke="#1e1b4b" stroke-width="1">
+                  <path d="M5 3l14 9-7 2-3 7-4-18z" />
+                </svg>
+              </div>
+
+              <!-- 摄像头画中画 -->
+              <!-- <div class="pip-cam">
+                <div class="absolute bottom-1 left-1/2 -translate-x-1/2 text-xs text-white font-bold drop-shadow-lg">👤
+                  解说中</div>
+              </div> -->
+
+              <!-- 控制条 -->
+              <div class="rec-bar">
+                <div class="flex items-center gap-1.5 text-xs text-white/70">
+                  <span class="rec-dot w-2 h-2 rounded-full bg-red-500"></span>
+                  00:11:37
+                </div>
+                <div class="w-px h-5 bg-white/20"></div>
+                <div class="flex items-center gap-0.5">
+                  <span class="wave-bar" style="animation-delay:0s;"></span>
+                  <span class="wave-bar" style="animation-delay:0.1s;"></span>
+                  <span class="wave-bar" style="animation-delay:0.2s;"></span>
+                  <span class="wave-bar" style="animation-delay:0.3s;"></span>
+                  <span class="wave-bar" style="animation-delay:0.4s;"></span>
+                </div>
+                <div class="w-px h-5 bg-white/20"></div>
+                <button class="rec-btn" title="停止录制">
+                  <div class="rec-btn-inner"></div>
+                </button>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                  stroke-linecap="round">
+                  <path
+                    d="M23 7l-7 5 7 5V7zM14 5H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z" />
+                </svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                  stroke-linecap="round">
+                  <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- 悬浮卡：录制完成 -->
+          <div class="float-card float-anim" style="top:10%;right:-20px;animation-delay:0.5s;">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#10b981;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+              </svg>
+            </div>
+            <div>
+              <div class="text-xs" style="color:#9ca3af;">录制完成</div>
+              <div class="text-sm font-bold" style="color:#1e1b4b;">教学视频.mp4</div>
+            </div>
+          </div>
+
+          <!-- 悬浮卡：声音 -->
+          <div class="float-card float-anim" style="bottom:10%;left:-30px;animation-delay:1s;">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#f59e0b;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+              </svg>
+            </div>
+            <div>
+              <div class="text-xs" style="color:#9ca3af;">声音采集</div>
+              <div class="text-sm font-bold" style="color:#1e1b4b;">系统+麦克风 ✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 数据统计 -->
+  <section class="py-16 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white rounded-3xl p-6 md:p-10"
+        style="box-shadow:0 10px 40px rgba(99,102,241,0.08);">
+        <div class="stat-card">
+          <div class="stat-num">2千+</div>
+          <div class="text-sm mt-2" style="color:#6b7280;">全球用户信赖</div>
+        </div>
+        <div class="stat-card border-l border-r-0 md:border-r" style="border-color:rgba(99,102,241,0.1);">
+          <div class="stat-num">2K/30fps</div>
+          <div class="text-sm mt-2" style="color:#6b7280;">高清录制画质</div>
+        </div>
+        <div class="stat-card border-t-2 md:border-t-0 md:border-l" style="border-color:rgba(99,102,241,0.1);">
+          <div class="stat-num">76.5%</div>
+          <div class="text-sm mt-2" style="color:#6b7280;">字幕识别准确率</div>
+        </div>
+        <div class="stat-card border-t-2 md:border-t-0 md:border-l" style="border-color:rgba(99,102,241,0.1);">
+          <div class="stat-num">4.9⭐</div>
+          <div class="text-sm mt-2" style="color:#6b7280;">用户综合评分</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 核心功能 -->
+  <section id="features" class="py-20 px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="section-label">核心功能</div>
+        <h2 class="section-title">为什么选择RecOns？</h2>
+        <p class="section-desc mx-auto">五大专业功能，让每一次录制都得心应手</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- 功能1 -->
+        <div class="feature-card stagger-item" style="animation-delay:0.05s;">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"
+              stroke-linecap="round">
+              <rect x="2" y="6" width="14" height="12" rx="2" />
+              <path d="M22 8l-6 4 6 4V8z" />
+            </svg>
+          </div>
+          <div class="feature-title-row">
+            <h3 class="text-lg font-bold" style="color:#1e1b4b;">高清画质录制</h3><span
+              class="text-[10px] font-bold px-1.5 py-0.5 rounded"
+              style="background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;">Life</span>
+          </div>
+          <p class="text-sm leading-relaxed" style="color:#6b7280;">最高支持 2K 分辨率、30fps 帧率，高清画质清晰还原每一个细节，丝滑不卡顿。</p>
+        </div>
+        <!-- 功能2 -->
+        <div class="feature-card stagger-item" style="animation-delay:0.1s;">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"
+              stroke-linecap="round">
+              <path d="M3 3h18v18H3z" />
+              <path d="M9 9h6v6H9z" />
+            </svg>
+          </div>
+          <div class="feature-title-row">
+            <h3 class="text-lg font-bold" style="color:#1e1b4b;">多种录制模式</h3>
+          </div>
+          <p class="text-sm leading-relaxed" style="color:#6b7280;">全屏录制、区域框选、指定窗口、跟随鼠标，四种模式灵活切换，想录哪里就录哪里。</p>
+        </div>
+        <!-- 功能3 -->
+        <!-- <div class="feature-card stagger-item" style="animation-delay:0.15s;">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"
+              stroke-linecap="round">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2" />
+            </svg>
+          </div>
+          <div class="feature-title-row">
+            <h3 class="text-lg font-bold" style="color:#1e1b4b;">摄像头画中画</h3><span
+              class="text-[10px] font-bold px-1.5 py-0.5 rounded"
+              style="background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;">Life</span>
+          </div>
+          <p class="text-sm leading-relaxed" style="color:#6b7280;">屏幕画面+摄像头人像同屏录制，支持绿幕抠像换背景，位置大小自由调节，教程解说、游戏直播的标配功能。
+          </p>
+        </div> -->
+        <!-- 功能4 -->
+        <div class="feature-card stagger-item" style="animation-delay:0.2s;">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"
+              stroke-linecap="round">
+              <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+          </div>
+          <div class="feature-title-row">
+            <h3 class="text-lg font-bold" style="color:#1e1b4b;">实时画笔标注</h3><span
+              class="text-[10px] font-bold px-1.5 py-0.5 rounded"
+              style="background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;">Life</span>
+          </div>
+          <p class="text-sm leading-relaxed" style="color:#6b7280;">录制中可随时圈画重点，箭头、文字等工具，让教程演示更直观清晰。</p>
+        </div>
+        <!-- 功能5 -->
+        <!-- <div class="feature-card stagger-item" style="animation-delay:0.25s;">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"
+              stroke-linecap="round">
+              <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+              <path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8" />
+            </svg>
+          </div>
+          <div class="feature-title-row">
+            <h3 class="text-lg font-bold" style="color:#1e1b4b;">双声道收音 & AI 降噪</h3><span
+              class="text-[10px] font-bold px-1.5 py-0.5 rounded"
+              style="background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;">Life</span>
+          </div>
+          <p class="text-sm leading-relaxed" style="color:#6b7280;">系统声音与麦克风同步录制，Life 生活版搭载 AI 智能降噪，人声清晰不失真，背景音乐立体饱满。</p>
+        </div> -->
+        <!-- 功能6 -->
+        <div class="feature-card stagger-item" style="animation-delay:0.3s;">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+          </div>
+          <div class="feature-title-row">
+            <h3 class="text-lg font-bold" style="color:#1e1b4b;">字幕导出与烧录</h3>
+          </div>
+          <p class="text-sm leading-relaxed" style="color:#6b7280;">支持 SRT 字幕格式导出，也可将字幕直接烧录进视频，一键导出
+            MP4，发布无需二次处理。</p>
+        </div>
+        <!-- 功能7 -->
+        <!-- <div class="feature-card stagger-item" style="animation-delay:0.35s;">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"
+              stroke-linecap="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <div class="feature-title-row">
+            <h3 class="text-lg font-bold" style="color:#1e1b4b;">定时录制</h3><span
+              class="text-[10px] font-bold px-1.5 py-0.5 rounded"
+              style="background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;">Life</span>
+          </div>
+          <p class="text-sm leading-relaxed" style="color:#6b7280;">预设起止时间自动录制，精彩直播、线上会议不错过；支持自动分段、自动停止，解放双手。</p>
+        </div> -->
+        <!-- 功能8 -->
+        <div class="feature-card stagger-item" style="animation-delay:0.4s;">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"
+              stroke-linecap="round">
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10" />
+            </svg>
+          </div>
+          <div class="feature-title-row">
+            <h3 class="text-lg font-bold" style="color:#1e1b4b;">快捷键操作</h3>
+          </div>
+          <p class="text-sm leading-relaxed" style="color:#6b7280;">全局快捷键一键开始/暂停/截图/标注，自定义快捷键组合，游戏全屏状态下也能快速操作。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 界面展示 -->
+  <section id="showcase" class="py-20 px-6"
+    style="background:linear-gradient(180deg,transparent,rgba(99,102,241,0.03),transparent);">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="section-label">界面预览</div>
+        <h2 class="section-title">简洁直观，上手即用</h2>
+        <p class="section-desc mx-auto">精心设计的操作界面，新手也能在 30 秒内开始第一次录制</p>
+      </div>
+
+      <!-- 展示1：主界面 -->
+      <div class="grid md:grid-cols-2 gap-12 items-center mb-20">
+        <div>
+          <div class="mock-frame">
+            <div class="mock-titlebar">
+              <div class="dot" style="background:#ef4444;"></div>
+              <div class="dot" style="background:#f59e0b;"></div>
+              <div class="dot" style="background:#10b981;"></div>
+              <div class="flex-1 text-center text-xs" style="color:rgba(255,255,255,0.5);">RecOns Life 生活版 — 主界面</div>
+            </div>
+            <div style="background:#f8fafc; padding:20px;">
+              <!-- 工具栏 -->
+              <div class="flex items-center gap-2 mb-4 flex-wrap">
+                <button class="px-3 py-2 rounded-lg text-xs font-semibold text-white" style="background:#6366f1;">
+                  <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                    全屏录制</span>
+                </button>
+                <button class="px-3 py-2 rounded-lg text-xs font-medium"
+                  style="background:#fff;border:1px solid #e5e7eb;color:#4b5563;">区域录制</button>
+                <!-- <button class="px-3 py-2 rounded-lg text-xs font-medium"
+                  style="background:#fff;border:1px solid #e5e7eb;color:#4b5563;">窗口录制</button> -->
+                <button class="px-3 py-2 rounded-lg text-xs font-medium"
+                  style="background:#fff;border:1px solid #e5e7eb;color:#4b5563;">游戏录制</button>
+                <!-- <div class="w-px h-5 bg-gray-200 mx-1"></div> -->
+                <button class="p-2 rounded-lg" aria-label="音频设置" style="background:#fff;border:1px solid #e5e7eb;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2">
+                    <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                  </svg>
+                </button>
+                <!-- <button class="p-2 rounded-lg" aria-label="摄像头设置" style="background:#fff;border:1px solid #e5e7eb;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2">
+                    <circle cx="12" cy="8" r="4" />
+                  </svg>
+                </button> -->
+              </div>
+              <!-- 参数设置 -->
+              <div class="bg-white rounded-xl p-4 mb-3" style="border:1px solid #e5e7eb;">
+                <div class="text-xs font-semibold mb-3" style="color:#1e1b4b;">录制参数</div>
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                  <div class="flex justify-between items-center p-2 rounded" style="background:#f8fafc;">
+                    <span style="color:#6b7280;">分辨率</span><span class="font-semibold"
+                      style="color:#1e1b4b;">2560×1600</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded" style="background:#f8fafc;">
+                    <span style="color:#6b7280;">帧率</span><span class="font-semibold" style="color:#1e1b4b;">30
+                      fps</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded" style="background:#f8fafc;">
+                    <span style="color:#6b7280;">系统声音</span><span class="font-semibold" style="color:#10b981;">●
+                      开启</span>
+                  </div>
+                  <div class="flex justify-between items-center p-2 rounded" style="background:#f8fafc;">
+                    <span style="color:#6b7280;">麦克风</span><span class="font-semibold" style="color:#10b981;">●
+                      开启</span>
+                  </div>
+                </div>
+              </div>
+              <!-- 大按钮 -->
+              <button class="w-full py-4 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2"
+                style="background:linear-gradient(135deg,#6366f1,#a855f7);box-shadow:0 8px 20px rgba(99,102,241,0.3);">
+                <span class="w-3 h-3 rounded-full bg-white"></span>
+                开始录制 (F9)
+              </button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">录制控制台</div>
+          <h3 class="text-3xl font-bold mb-4" style="color:#1e1b4b;">一站式参数配置</h3>
+          <p class="text-[16px] leading-relaxed mb-6" style="color:#6b7280;">
+            所有录制参数尽收眼底，分辨率、帧率、音频源一键切换。预设「游戏」「网课」「直播」「教程」四种常用模式，无需繁琐设置，直接开录。
+          </p>
+          <ul class="space-y-3">
+            <li class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                style="background:rgba(99,102,241,0.1);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#6366f1">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+              </div>
+              <span class="text-[15px]" style="color:#374151;">2K/1080P/720P 多档分辨率自由选择</span>
+            </li>
+            <!-- <li class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                style="background:rgba(99,102,241,0.1);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#6366f1">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+              </div>
+              <span class="text-[15px]" style="color:#374151;">智能识别游戏窗口，自动切换高性能模式</span>
+            </li> -->
+            <li class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                style="background:rgba(99,102,241,0.1);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#6366f1">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+              </div>
+              <span class="text-[15px]" style="color:#374151;">录制文件自动命名+分类保存，井井有条</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 展示2：AI 字幕识别面板 -->
+      <section class="py-20 px-6" style="background:#fafafa;">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-14 items-center">
+          <!-- 左：字幕面板 mockup -->
+          <div class="mockup-window rounded-2xl overflow-hidden shadow-2xl order-2 md:order-1"
+            style="border:1px solid rgba(99,102,241,0.15);">
+            <!-- 窗口标题栏 -->
+            <div class="h-9 flex items-center px-4 gap-1.5" style="background:#f5f5f7;">
+              <span class="w-3 h-3 rounded-full" style="background:#ff5f57;"></span>
+              <span class="w-3 h-3 rounded-full" style="background:#febc2e;"></span>
+              <span class="w-3 h-3 rounded-full" style="background:#28c840;"></span>
+              <div class="flex-1 text-center text-xs" style="color:rgba(255,255,255,0.5);">RecOns Life — AI 字幕识别</div>
+            </div>
+            <!-- 内容：字幕面板 -->
+            <div class="p-5 bg-white">
+              <!-- 顶部：语言选择+识别状态 -->
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                  <span class="text-xs font-semibold" style="color:#10b981;">实时识别中 · 普通话</span>
+                </div>
+                <div class="flex gap-1.5">
+                  <button class="text-[11px] px-2.5 py-1 rounded-md font-medium"
+                    style="background:#eef2ff;color:#6366f1;">中</button>
+                  <button class="text-[11px] px-2.5 py-1 rounded-md"
+                    style="background:#f3f4f6;color:#6b7280;">En</button>
+                  <!-- <button class="text-[11px] px-2.5 py-1 rounded-md"
+                    style="background:#f3f4f6;color:#6b7280;">日</button> -->
+                </div>
+              </div>
+              <!-- 字幕列表 -->
+              <div class="space-y-2.5 text-[12px]">
+                <div class="flex gap-3 p-2.5 rounded-lg" style="background:#eef2ff;border-left:3px solid #6366f1;">
+                  <span class="font-mono font-semibold shrink-0" style="color:#6366f1;">00:42</span>
+                  <span style="color:#1e1b4b;">大家好，欢迎来到今天的产品演示教程</span>
+                </div>
+                <div class="flex gap-3 p-2.5 rounded-lg" style="background:#f9fafb;">
+                  <span class="font-mono shrink-0" style="color:#9ca3af;">00:47</span>
+                  <span style="color:#374151;">今天我们要介绍的是如何使用 RecOns 进行屏幕录制</span>
+                </div>
+                <div class="flex gap-3 p-2.5 rounded-lg" style="background:#f9fafb;">
+                  <span class="font-mono shrink-0" style="color:#9ca3af;">00:53</span>
+                  <span style="color:#374151;">首先点击界面左上角的红色录制按钮，选择录制区域</span>
+                </div>
+                <div class="flex gap-3 p-2.5 rounded-lg" style="background:#f9fafb;">
+                  <span class="font-mono shrink-0" style="color:#9ca3af;">01:02</span>
+                  <span style="color:#374151;">开启 <span style="background:#fef3c7;padding:1px 4px;border-radius:3px;">AI
+                      字幕识别</span> 后，软件会自动将语音转为文字</span>
+                </div>
+                <div class="flex gap-3 p-2.5 rounded-lg bg-white" style="border:1px dashed #c7d2fe;">
+                  <span class="font-mono shrink-0" style="color:#6366f1;">
+                    <span class="inline-block w-1.5 h-3 bg-indigo-500 mr-1 animate-pulse"></span>
+                    01:10
+                  </span>
+                  <span style="color:#1e1b4b;">录制完成后可以一键导出 SRT 字幕文件...</span>
+                </div>
+              </div>
+              <!-- 底部操作栏 -->
+              <div class="mt-4 flex items-center justify-between pt-3" style="border-top:1px solid #f3f4f6;">
+                <div class="flex items-center gap-3 text-[11px]" style="color:#6b7280;">
+                  <span>已识别 <strong style="color:#1e1b4b;">128</strong> 字</span>
+                  <span>准确率 <strong style="color:#10b981;">76.5%</strong></span>
+                </div>
+                <div class="flex gap-2">
+                  <button class="text-[11px] px-3 py-1.5 rounded-md font-medium"
+                    style="background:#f3f4f6;color:#374151;">编辑</button>
+                  <button class="text-[11px] px-3 py-1.5 rounded-md font-medium text-white"
+                    style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">导出字幕</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 右：文案 -->
+          <div class="order-1 md:order-2">
+            <span class="inline-block text-xs font-bold tracking-widest px-3 py-1 rounded-full mb-4"
+              style="background:rgba(99,102,241,0.1);color:#6366f1;">AI 字幕识别</span>
+            <h2 class="text-3xl md:text-4xl font-bold mb-5 leading-tight" style="color:#1e1b4b;">边录边识别<br>字幕<span
+                style="background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">自动生成</span>
+            </h2>
+            <p class="text-[15px] leading-relaxed mb-6" style="color:#6b7280;">无需后期听写打字，RecOns 在录制的同时实时进行 AI
+              语音识别，自动生成时间轴对齐的字幕。录制结束即可导出，UP 主、记者做笔记都能节省 30% 以上的字幕制作时间。</p>
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span
+                  class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 mt-0.5"
+                  style="background:linear-gradient(135deg,#6366f1,#a855f7);">1</span>
+                <span class="text-[15px]" style="color:#374151;">支持多种语言识别，中英等自动切换</span>
+              </div>
+              <div class="flex items-start gap-3">
+                <span
+                  class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 mt-0.5"
+                  style="background:linear-gradient(135deg,#6366f1,#a855f7);">2</span>
+                <span class="text-[15px]" style="color:#374151;">识别准确率 76.5%，专业术语可导入自定义词库</span>
+              </div>
+              <div class="flex items-start gap-3">
+                <span
+                  class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 mt-0.5"
+                  style="background:linear-gradient(135deg,#6366f1,#a855f7);">3</span>
+                <span class="text-[15px]" style="color:#374151;">一键导出 SRT，直接导入剪映</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 三步上手 -->
+      <div class="mt-16 bg-white rounded-3xl p-10 md:p-14" style="box-shadow:0 10px 40px rgba(99,102,241,0.08);">
+        <h3 class="text-2xl md:text-3xl font-bold text-center mb-10" style="color:#1e1b4b;">三步轻松开始录制</h3>
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="step-line relative">
+            <div class="step-num">1</div>
+            <h4 class="text-lg font-bold mb-2" style="color:#1e1b4b;">选择录制模式</h4>
+            <p class="text-[15px] leading-relaxed" style="color:#6b7280;">打开软件，选择全屏、区域或窗口录制模式，按需开启摄像头和麦克风。</p>
+          </div>
+          <div class="step-line relative">
+            <div class="step-num">2</div>
+            <h4 class="text-lg font-bold mb-2" style="color:#1e1b4b;">一键开始录制</h4>
+            <p class="text-[15px] leading-relaxed" style="color:#6b7280;">点击红色录制按钮或按下 F9 快捷键，AI 字幕即刻开始实时识别语音。</p>
+          </div>
+          <div class="step-line relative">
+            <div class="step-num">3</div>
+            <h4 class="text-lg font-bold mb-2" style="color:#1e1b4b;">字幕导出发布</h4>
+            <p class="text-[15px] leading-relaxed" style="color:#6b7280;">录制结束 AI 字幕已同步生成，可直接编辑校对，一键导出
+              SRT，或烧录字幕后发布到 抖音/视频号。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 用户评价 -->
+  <section id="reviews" class="py-20 px-6"
+    style="background:linear-gradient(180deg,transparent,rgba(168,85,247,0.03),transparent);">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="section-label">用户评价</div>
+        <h2 class="section-title">2千用户的共同选择</h2>
+        <p class="section-desc mx-auto">来自各行各业用户的真实使用反馈</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="review-card">
+          <div class="flex items-center gap-1 mb-4">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+          </div>
+          <p class="text-[15px] leading-relaxed mb-5" style="color:#4b5563;">
+            作为一名教育老师，试过三四款录屏软件，RecOns是最顺手的。字幕识别挺准，学生反馈看我的视频思路清晰、字幕同步。买了 Life 生活版后画笔标注、AI降噪都能用，备课效率翻倍，必须好评！</p>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
+              style="background:linear-gradient(135deg,#6366f1,#a855f7);">李</div>
+            <div>
+              <div class="font-semibold text-sm" style="color:#1e1b4b;">李老师</div>
+              <div class="text-xs" style="color:#9ca3af;">高中数学教师 · 河北</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="flex items-center gap-1 mb-4">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+          </div>
+          <p class="text-[15px] leading-relaxed mb-5" style="color:#4b5563;">做科技 UP 主两年了，之前用 OBS 设置太复杂，字幕还得自己打。RecOns
+            2k 30帧画质够用、文件体积小，关键是边录边出字幕，准确率超高，连专业术语都很少错，我的视频产能直接翻倍。</p>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
+              style="background:linear-gradient(135deg,#ec4899,#f43f5e);">陆</div>
+            <div>
+              <div class="font-semibold text-sm" style="color:#1e1b4b;">小陆同学</div>
+              <div class="text-xs" style="color:#9ca3af;">B站游戏UP主 · 山东</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="flex items-center gap-1 mb-4">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+            </svg>
+          </div>
+          <p class="text-[15px] leading-relaxed mb-5" style="color:#4b5563;">公司做产品需要大量演示视频，对比了付费软件后发现 RecOns
+            完全能满足需求！鼠标高亮、聚光灯效果专业，AI字幕自动生成还能直接烧录进视频，给整个团队都装上了，软件费和后期加工时都省了。</p>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
+              style="background:linear-gradient(135deg,#10b981,#06b6d4);">唐</div>
+            <div>
+              <div class="font-semibold text-sm" style="color:#1e1b4b;">唐产品</div>
+              <div class="text-xs" style="color:#9ca3af;">互联网产品经理 · 广州</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 版本对比 -->
+  <section id="compare" class="py-20 px-6"
+    style="background:linear-gradient(180deg,transparent,rgba(99,102,241,0.03),transparent);">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-14">
+        <div class="section-label">版本对比</div>
+        <h2 class="section-title">自由选择，按需使用</h2>
+        <p class="section-desc mx-auto">开源核心功能永久免费，Life 生活版为专业创作者提供进阶能力，一份授权支持项目长期迭代</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 lg:gap-8">
+        <!-- 免费开源版 -->
+        <div class="relative rounded-3xl p-8 md:p-10 bg-white border-2 transition hover:shadow-xl"
+          style="border-color:rgba(99,102,241,0.12);box-shadow:0 4px 24px rgba(99,102,241,0.06);">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center"
+              style="background:linear-gradient(135deg,#10b981,#059669);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <path
+                  d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.38 7.86 10.9.58.1.79-.25.79-.55v-2c-3.2.7-3.88-1.36-3.88-1.36-.52-1.32-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.67 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.17.91-.25 1.89-.38 2.86-.39.97.01 1.95.14 2.86.39 2.19-1.48 3.15-1.17 3.15-1.17.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.4-2.69 5.37-5.25 5.66.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.8.55C20.21 21.37 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z" />
+              </svg>
+            </div>
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold"
+                style="background:rgba(16,185,129,0.1);color:#059669;">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                </svg>
+                开源 · MIT 协议
+              </div>
+              <h3 class="text-2xl font-bold mt-1.5" style="color:#1e1b4b;">社区开源版</h3>
+            </div>
+          </div>
+          <div class="flex items-baseline gap-2 mb-2">
+            <span class="text-5xl font-black" style="color:#059669;">免费</span>
+            <span class="text-sm" style="color:#9ca3af;">30天免费</span>
+          </div>
+          <p class="text-[15px] leading-relaxed mb-6" style="color:#6b7280;">面向日常录制需求的个人用户，核心录制能力完整开源，可自由查看源码、二次开发。</p>
+
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#10b981" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <polyline points="20 6 9 17 4 12" />
+              </svg><span class="text-[15px]" style="color:#374151;">最高 720P / 30fps 基础录制</span></li>
+            <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#10b981" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <polyline points="20 6 9 17 4 12" />
+              </svg><span class="text-[15px]" style="color:#374151;">全屏 / 区域 / 窗口三种录制模式</span></li>
+            <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#10b981" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <polyline points="20 6 9 17 4 12" />
+              </svg><span class="text-[15px]" style="color:#374151;">系统声音 + 麦克风同步录制</span></li>
+            <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#10b981" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <polyline points="20 6 9 17 4 12" />
+              </svg><span class="text-[15px]" style="color:#374151;"><strong>基础字幕识别</strong>：中英文识别 + SRT 导出</span>
+            </li>
+            <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#10b981" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <polyline points="20 6 9 17 4 12" />
+              </svg><span class="text-[15px]" style="color:#374151;">无广告、无捆绑插件</span></li>
+            <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#10b981" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <polyline points="20 6 9 17 4 12" />
+              </svg><span class="text-[15px]" style="color:#374151;">源代码开放，可查看、可修改、可分发（MIT）</span></li>
+            <li class="flex items-start gap-3 opacity-70"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <path d="M12 9v4M12 17h.01" />
+                <circle cx="12" cy="12" r="10" />
+              </svg><span class="text-[15px]" style="color:#92400e;">单次录制限 3 分钟，适合功能体验</span></li>
+            <li class="flex items-start gap-3 opacity-70"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <path d="M12 9v4M12 17h.01" />
+                <circle cx="12" cy="12" r="10" />
+              </svg><span class="text-[15px]" style="color:#92400e;">导出视频带 RecOns 产品水印</span></li>
+            <li class="flex items-start gap-3 opacity-50"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg><span class="text-[15px]" style="color:#9ca3af;">摄像头画中画 · 画笔标注 · AI 降噪</span></li>
+            <li class="flex items-start gap-3 opacity-50"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg><span class="text-[15px]" style="color:#9ca3af;">视频编辑器 · 多语种字幕 · 商业授权</span></li>
+          </ul>
+
+          <a href="#downloads"
+            class="block w-full py-3.5 rounded-xl text-center font-semibold text-[15px] transition hover:bg-emerald-50"
+            style="border:2px solid #10b981;color:#059669;">
+            免费下载开源版
+          </a>
+          <div class="mt-3 text-center">
+            <a href="#" class="text-xs inline-flex items-center gap-1 hover:underline" style="color:#6366f1;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.38 7.86 10.9.58.1.79-.25.79-.55v-2c-3.2.7-3.88-1.36-3.88-1.36-.52-1.32-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.67 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.17.91-.25 1.89-.38 2.86-.39.97.01 1.95.14 2.86.39 2.19-1.48 3.15-1.17 3.15-1.17.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.4-2.69 5.37-5.25 5.66.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.8.55C20.21 21.37 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z" />
+              </svg>
+              查看 GitHub 仓库
+            </a>
+          </div>
+        </div>
+
+        <!-- Life 生活版 -->
+        <div class="relative rounded-3xl p-8 md:p-10 text-white overflow-hidden"
+          style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 60%,#a855f7 100%);box-shadow:0 20px 50px rgba(99,102,241,0.3);">
+          <div class="absolute top-0 right-0 w-64 h-64 rounded-full opacity-15 blur-3xl" style="background:#fbbf24;">
+          </div>
+          <div class="absolute top-0 left-0 w-48 h-48 rounded-full opacity-10 blur-3xl" style="background:#fff;"></div>
+          <!-- 热门标识 -->
+          <div class="absolute top-5 right-5 px-3 py-1 rounded-full text-xs font-bold"
+            style="background:#fbbf24;color:#78350f;">
+            🔥 创作者首选
+          </div>
+
+          <div class="relative">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center"
+                style="background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                  <polygon
+                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+                </svg>
+              </div>
+              <div>
+                <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold"
+                  style="background:rgba(255,255,255,0.2);color:#fff;">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                      d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                  Life · 生活版
+                </div>
+                <h3 class="text-2xl font-bold mt-1.5">RecOns <span
+                    style="background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Life</span>
+                </h3>
+              </div>
+            </div>
+            <div class="flex items-baseline gap-2 mb-2">
+              <span class="text-5xl font-black">¥214</span>
+              <span class="text-white/60 text-sm">/ 永久授权</span>
+            </div>
+            <p class="text-[15px] leading-relaxed mb-6 text-white/80;">面向视频创作者、教育工作者和企业用户，解锁全部专业能力，享三年技术支持。</p>
+
+            <ul class="space-y-3 mb-8">
+              <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg><span class="text-[15px]"><strong>2K / 60fps 高清</strong> + HDR 色彩录制</span></li>
+              <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg><span class="text-[15px]"><strong>免时长限制、免水印</strong>，GPU 硬件加速不卡帧</span></li>
+              <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg><span class="text-[15px]"><strong>AI 字幕（Life 生活修复）</strong>：11 语种识别 + 说话人分离</span></li>
+              <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg><span class="text-[15px]"><strong>字幕实时翻译</strong>：中英互译、双语字幕同步生成</span></li>
+              <!-- <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg><span class="text-[15px]"><strong>摄像头画中画</strong> + 绿幕抠像，人像背景自由替换</span></li> -->
+               <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg><span class="text-[15px]"><strong>无广告、无病毒</strong> + 无捆绑插件</span></li>
+              <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg><span class="text-[15px]"><strong>实时画笔标注</strong>：11 种工具</span></li>
+              <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg><span class="text-[15px]">AI 智能降噪：有效消除环境噪音、键盘声、电流声</span></li>
+              <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg><span class="text-[15px]">专业视频编辑器：多轨道、转场、滤镜、绿幕、一键配音</span></li>
+              <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg><span class="text-[15px]">云端录制：云端备份、定时录制、直播推流 RTMP 多平台</span></li>
+              <li class="flex items-start gap-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" class="shrink-0 mt-0.5">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg><span class="text-[15px]">商业使用授权，企业批量部署、终身升级、技术支持</span></li>
+            </ul>
+
+            <button
+              class="w-full py-3.5 rounded-xl font-bold text-[15px] transition hover:-translate-y-0.5 shadow-xl flex items-center justify-center gap-2"
+              style="background:#fff;color:#4f46e5;" onclick="showToast('感谢您的支持！')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+              </svg>
+              立即购买 Life 生活版 · ¥214 （首次安装维护费 ¥90）</span>
+            </button>
+            <p class="mt-3 text-center text-xs text-white/60">一次购买，终身使用 · 30 天无理由退款，免三年维护费</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 详细功能对比表 -->
+      <div class="mt-14 bg-white rounded-3xl overflow-hidden" style="box-shadow:0 10px 40px rgba(99,102,241,0.08);">
+        <div class="px-8 pt-8 pb-4">
+          <h3 class="text-xl font-bold" style="color:#1e1b4b;">详细功能对比</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-[15px]">
+            <thead>
+              <tr style="background:linear-gradient(135deg,rgba(99,102,241,0.04),rgba(168,85,247,0.04));">
+                <th class="text-left px-8 py-4 font-semibold" style="color:#6b7280;">功能项</th>
+                <th class="text-center px-6 py-4 font-semibold" style="color:#059669;">开源免费版</th>
+                <th class="text-center px-6 py-4 font-semibold" style="color:#6366f1;">Life 生活版</th>
+              </tr>
+            </thead>
+            <tbody style="color:#374151;">
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">最高录制分辨率</td>
+                <td class="text-center px-6 py-3.5">720P</td>
+                <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">2K + HDR</td>
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">帧率</td>
+                <td class="text-center px-6 py-3.5">30 fps</td>
+                <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">最高 60 fps</td>
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">单次录制时长</td>
+                <td class="text-center px-6 py-3.5" style="color:#d97706;">限 3 分钟</td>
+                <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">免时长限制</td>
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">视频水印</td>
+                <td class="text-center px-6 py-3.5" style="color:#d97706;">RecOns 产品水印</td>
+                <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">免水印</td>
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">🎯 AI 字幕识别</td>
+                <td class="text-center px-6 py-3.5">中英文基础识别<br><span class="text-xs" style="color:#9ca3af;">SRT/TXT
+                    导出</span></td>
+                <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">11 语种增强识别<br><span
+                    class="text-xs">说话人分离 · 实时翻译</span></td>
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">字幕导出格式</td>
+                <td class="text-center px-6 py-3.5">SRT / TXT</td>
+                <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">SRT / 烧录视频</td>
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">摄像头画中画</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">—</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">—</td>
+                <!-- <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">✓ + 绿幕抠像</td> -->
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">实时画笔标注</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">—</td>
+                <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">✓ 11 种工具</td>
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">AI 音频降噪</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">—</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">—</td>
+                <!-- <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">✓ AI 智能降噪</td> -->
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">视频编辑器</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">—</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">—</td>
+                <!-- <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">✓ 多轨专业编辑器</td> -->
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">鼠标特效/聚光灯</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">—</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">—</td>
+                <!-- <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">✓</td> -->
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">直播推流</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">—</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">—</td>
+                <!-- <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">✓ RTMP 多平台</td> -->
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">云端备份同步</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">—</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">—</td>
+                <!-- <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">✓ 50GB 云空间</td> -->
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">商业使用授权</td>
+                <td class="text-center px-6 py-3.5" style="color:#9ca3af;">仅个人学习体验</td>
+                <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">✓ 商业授权</td>
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">技术支持</td>
+                <td class="text-center px-6 py-3.5">社区论坛</td>
+                <td class="text-center px-6 py-3.5 font-semibold" style="color:#6366f1;">✓ 免等待优先响应</td>
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">源代码</td>
+                <td class="text-center px-6 py-3.5" style="color:#059669;">✓ MIT 开源</td>
+                <td class="text-center px-6 py-3.5">闭源商业版</td>
+              </tr>
+              <tr class="border-t" style="border-color:rgba(99,102,241,0.06);">
+                <td class="px-8 py-3.5">价格</td>
+                <td class="text-center px-6 py-3.5 font-bold" style="color:#059669;">¥ 0 体验版</td>
+                <td class="text-center px-6 py-3.5 font-bold" style="color:#6366f1;">¥214 / 永久授权</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 捐赠支持 -->
+  <section id="donate" class="py-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-12">
+        <div class="section-label">支持我们 ❤️</div>
+        <h2 class="section-title">一杯豆浆，让开源走得更远</h2>
+        <p class="section-desc mx-auto">RecOns由一群热爱开源的开发者在业余时间维护。如果它帮助到了你，欢迎请我们喝杯豆浆，你的每一份支持都是我们持续迭代的动力。</p>
+      </div>
+
+      <div class="relative rounded-3xl p-8 md:p-12 overflow-hidden"
+        style="background:linear-gradient(135deg,#fef3c7 0%,#fce7f3 50%,#e0e7ff 100%);">
+        <!-- 装饰元素 -->
+        <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-30 blur-2xl" style="background:#fbbf24;">
+        </div>
+        <div class="absolute -bottom-10 -left-10 w-48 h-48 rounded-full opacity-30 blur-2xl"
+          style="background:#ec4899;"></div>
+
+        <div class="relative grid md:grid-cols-5 gap-8 items-center">
+          <!-- 左：文案 & 捐赠方式 -->
+          <div class="md:col-span-3">
+            <h3 class="text-2xl md:text-3xl font-bold mb-4" style="color:#1e1b4b;">💖 支持开源，感谢有你</h3>
+            <p class="text-[15px] leading-relaxed mb-6" style="color:#4b5563;">
+              你的捐款将用于：<strong>服务器与带宽费用</strong>、<strong>Windows
+                数字签名证书</strong>、<strong>新功能开发</strong>、<strong>社区活动运营</strong>。所有收支每月在 GitHub 项目主页公开透明披露。
+            </p>
+
+            <div class="mb-6">
+              <div class="text-sm font-semibold mb-3" style="color:#1e1b4b;">选择金额</div>
+              <div class="flex flex-wrap gap-2 mb-4" id="donateAmounts">
+                <button class="donate-amount px-4 py-2 rounded-xl font-semibold text-sm transition" data-amount="6"
+                  style="background:#fff;color:#6b7280;border:1.5px solid #e5e7eb;" onclick="selectAmount(this,6)">¥6 豆浆
+                  ☕</button>
+                <button class="donate-amount px-4 py-2 rounded-xl font-semibold text-sm transition ring-2 ring-offset-2"
+                  data-amount="18"
+                  style="background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;border:1.5px solid transparent;box-shadow:0 4px 12px rgba(99,102,241,0.3);"
+                  onclick="selectAmount(this,18)">¥18 礼物 🧋</button>
+                <button class="donate-amount px-4 py-2 rounded-xl font-semibold text-sm transition" data-amount="36"
+                  style="background:#fff;color:#6b7280;border:1.5px solid #e5e7eb;" onclick="selectAmount(this,36)">¥36
+                  快餐 🍱</button>
+                <button class="donate-amount px-4 py-2 rounded-xl font-semibold text-sm transition" data-amount="66"
+                  style="background:#fff;color:#6b7280;border:1.5px solid #e5e7eb;" onclick="selectAmount(this,66)">¥66
+                  优惠券 ⛽</button>
+                <button class="donate-amount px-4 py-2 rounded-xl font-semibold text-sm transition" data-amount="custom"
+                  style="background:#fff;color:#6b7280;border:1.5px solid #e5e7eb;"
+                  onclick="selectAmount(this,'custom')">自定义</button>
+              </div>
+              <div id="customAmountWrap" class="hidden mb-4">
+                <div class="flex items-center gap-2 max-w-[200px]">
+                  <span class="text-lg font-bold" style="color:#6b7280;">¥</span>
+                  <input type="number" id="customAmountInput" min="1" max="9999" placeholder="输入金额"
+                    class="flex-1 px-3 py-2 rounded-xl text-sm outline-none"
+                    style="border:1.5px solid #e5e7eb;background:#fff;">
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-6">
+              <div class="text-sm font-semibold mb-3" style="color:#1e1b4b;">选择支付方式</div>
+              <div class="flex flex-wrap gap-3" id="donateMethods">
+                <button
+                  class="donate-method flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition ring-2 ring-offset-2"
+                  data-method="wechat"
+                  style="background:#fff;color:#07c160;border:1.5px solid #07c160;box-shadow:0 4px 12px rgba(7,193,96,0.2);"
+                  onclick="selectMethod(this,'wechat')">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#07c160">
+                    <path
+                      d="M8.691 2C4.768 2 1.5 4.658 1.5 8.028c0 1.95 1.103 3.61 2.794 4.766l-.7 2.1 2.45-1.228c.744.146 1.416.294 2.207.294.174 0 .344-.01.515-.024-.108-.376-.174-.767-.174-1.173 0-2.94 2.79-5.33 6.246-5.33.194 0 .384.01.574.036C14.78 4.216 12.027 2 8.691 2zm-2.4 2.87c.496 0 .87.374.87.87a.87.87 0 01-.87.87.87.87 0 01-.87-.87c0-.496.374-.87.87-.87zm4.696 0c.496 0 .87.374.87.87a.87.87 0 01-.87.87.87.87 0 01-.87-.87c0-.496.374-.87.87-.87z" />
+                  </svg>
+                  微信支付
+                </button>
+                <button
+                  class="donate-method flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition"
+                  data-method="alipay" style="background:#fff;color:#1677ff;border:1.5px solid #e5e7eb;"
+                  onclick="selectMethod(this,'alipay')">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#1677ff">
+                    <circle cx="12" cy="12" r="10" />
+                  </svg>
+                  支付宝
+                </button>
+                <button
+                  class="donate-method flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition"
+                  data-method="unionpay" style="background:#fff;color:#e21836;border:1.5px solid #e5e7eb;"
+                  onclick="selectMethod(this,'unionpay')">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <rect x="2" y="2" width="20" height="20" rx="4" fill="#e21836"/>
+                    <path d="M7 8.5c0-1.4 1.1-2.5 2.5-2.5h1c.4 0 .7.3.7.7v2.6c0 .4-.3.7-.7.7H9.5c-.3 0-.5-.2-.5-.5s.2-.5.5-.5h1.2V7.5H9.5C9 7.5 8.5 7.9 8.5 8.5S9 9.5 9.5 9.5h1c.8 0 1.5.7 1.5 1.5v2c0 1.4-1.1 2.5-2.5 2.5h-1c-.4 0-.7-.3-.7-.7v-2.6c0-.4.3-.7.7-.7h1c.3 0 .5.2.5.5s-.2.5-.5.5H8V14h1.5c.5 0 1-.4 1-1V11c0-.6-.4-1-1-1h-1C7.6 10 7 9.4 7 8.5z" fill="#fff"/>
+                    <path d="M14.5 6c.3 0 .5.2.5.5v4.2c0 .3-.2.5-.5.5s-.5-.2-.5-.5V6.5c0-.3.2-.5.5-.5zm3 0c.3 0 .5.2.5.5v4.2c0 .3-.2.5-.5.5s-.5-.2-.5-.5V6.5c0-.3.2-.5.5-.5zm-4.5 7c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v3c0 1.1-.9 2-2 2h-2c-1.1 0-2-.9-2-2v-3z" fill="#fff"/>
+                  </svg>
+                  云闪付
+                </button>
+              </div>
+            </div>
+
+            <button id="donateSubmitBtn"
+              class="px-8 py-3.5 rounded-xl font-bold text-[15px] text-white transition hover:-translate-y-0.5 shadow-lg inline-flex items-center gap-2"
+              style="background:linear-gradient(135deg,#ec4899,#f43f5e);" onclick="submitDonate()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+              <span id="donateBtnText">感谢支持 ¥18</span>
+            </button>
+
+            <div class="mt-4 flex flex-wrap gap-4 text-xs" style="color:#6b7280;">
+              <span class="inline-flex items-center gap-1"><svg width="14" height="14" viewBox="0 0 24 24"
+                  fill="#10b981">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>支付安全加密</span>
+              <span class="inline-flex items-center gap-1"><svg width="14" height="14" viewBox="0 0 24 24"
+                  fill="#10b981">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>不强制留名</span>
+              <span class="inline-flex items-center gap-1"><svg width="14" height="14" viewBox="0 0 24 24"
+                  fill="#10b981">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>可开具捐赠电子证书</span>
+            </div>
+          </div>
+
+          <!-- 右：捐赠者墙 -->
+          <div class="md:col-span-2">
+            <div class="bg-white/70 backdrop-blur rounded-2xl p-5" style="border:1px solid rgba(255,255,255,0.8);">
+              <div class="flex items-center justify-between mb-3">
+                <h4 class="font-bold text-sm flex items-center gap-1.5" style="color:#1e1b4b;">
+                  <span style="color:#fbbf24;">♥</span> 近期支持者
+                </h4>
+                <span class="text-xs" style="color:#9ca3af;">共 6 位</span>
+              </div>
+              <div class="space-y-2.5 max-h-[280px] overflow-y-auto pr-1" style="scrollbar-width:thin;">
+                <div class="flex items-center gap-2.5 text-sm">
+                  <div
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0"
+                    style="background:linear-gradient(135deg,#6366f1,#a855f7);">白</div>
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium truncate" style="color:#1e1b4b;">白*志</div>
+                    <div class="text-xs truncate" style="color:#9ca3af;">做教程必备，感谢开发者 🙏</div>
+                  </div>
+                  <div class="text-xs font-bold shrink-0" style="color:#f43f5e;">¥36</div>
+                </div>
+                <div class="flex items-center gap-2.5 text-sm">
+                  <div
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0"
+                    style="background:linear-gradient(135deg,#ec4899,#f43f5e);">O</div>
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium truncate" style="color:#1e1b4b;">Ons_dev</div>
+                    <div class="text-xs truncate" style="color:#9ca3af;">比付费软件还好用！</div>
+                  </div>
+                  <div class="text-xs font-bold shrink-0" style="color:#f43f5e;">¥18</div>
+                </div>
+                <div class="flex items-center gap-2.5 text-sm">
+                  <div
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0"
+                    style="background:linear-gradient(135deg,#f59e0b,#d97706);">张</div>
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium truncate" style="color:#1e1b4b;">匿名好心人</div>
+                    <div class="text-xs truncate" style="color:#9ca3af;">加油！期待更多功能</div>
+                  </div>
+                  <div class="text-xs font-bold shrink-0" style="color:#f43f5e;">¥18</div>
+                </div>
+                <div class="flex items-center gap-2.5 text-sm">
+                  <div
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0"
+                    style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">赵</div>
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium truncate" style="color:#1e1b4b;">Zhao*UP</div>
+                    <div class="text-xs truncate" style="color:#9ca3af;">UP主强烈推荐！</div>
+                  </div>
+                  <div class="text-xs font-bold shrink-0" style="color:#f43f5e;">¥88</div>
+                </div>
+                <div class="flex items-center gap-2.5 text-sm">
+                  <div
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0"
+                    style="background:linear-gradient(135deg,#06b6d4,#3b82f6);">周</div>
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium truncate" style="color:#1e1b4b;">周*学</div>
+                    <div class="text-xs truncate" style="color:#9ca3af;">学生党，略表心意 ❤️</div>
+                  </div>
+                  <div class="text-xs font-bold shrink-0" style="color:#f43f5e;">¥6</div>
+                </div>
+                <div class="flex items-center gap-2.5 text-sm">
+                  <div
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0"
+                    style="background:linear-gradient(135deg,#a855f7,#ec4899);">刘</div>
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium truncate" style="color:#1e1b4b;">Liu*PM</div>
+                    <div class="text-xs truncate" style="color:#9ca3af;">做产品演示太方便了</div>
+                  </div>
+                  <div class="text-xs font-bold shrink-0" style="color:#f43f5e;">¥36</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 下载区域 -->
+  <section id="downloads" class="py-20 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <div class="section-label">立即下载</div>
+        <h2 class="section-title">选择你的平台，开启高清录制</h2>
+        <p class="section-desc mx-auto">基础版免费体验 · Life 版解锁无水印/无时长限制等全部能力 · v0.5.1 | 更新于 2027 年 3 月</p>
+      </div>
+
+      <div class="flex justify-center">
+        <div class="w-full max-w-md">
+          <!-- Windows -->
+          <div class="platform-card recommended" style="padding:2.5rem;">
+            <div class="w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center"
+              style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+                <path
+                  d="M3 5.548L10.455 4.5v7.05H3V5.548zm0 12.904l7.455 1.04V12.5H3v5.952zM11.455 13.55h9.545v8.45L11.455 21V13.55zm0-9.1v7.05h9.545V3L11.455 4.45z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-2 text-center" style="color:#1e1b4b;">Windows 版</h3>
+            <p class="text-sm mb-5 text-center" style="color:#6b7280;">适用于 Win 7 / 10 / 11 · 支持 32 位 / 64 位</p>
+            <div class="text-sm mb-6 space-y-2 p-4 rounded-xl" style="background:#f9fafb;color:#4b5563;">
+              <div class="flex justify-between"><span>安装包大小</span><span class="font-medium" style="color:#1e1b4b;">79
+                  MB</span></div>
+              <div class="flex justify-between"><span>当前版本</span><span class="font-medium" style="color:#1e1b4b;">v0.3.1
+                  正式版</span></div>
+              <div class="flex justify-between"><span>更新时间</span><span class="font-medium" style="color:#1e1b4b;">2026 年
+                  12 月</span></div>
+              <div class="flex justify-between"><span>系统要求</span><span class="font-medium" style="color:#1e1b4b;">2GB 内存
+                  · 3GB 硬盘</span></div>
+            </div>
+            <button id="dl-win-btn"
+              class="w-full py-4 rounded-xl text-white font-semibold text-base transition hover:opacity-90 pulse-ring"
+              style="background:linear-gradient(135deg,#6366f1,#8b5cf6);"
+              onclick="handlePlatformBtn(this,'Windows','v0.3.1')">
+              ⬇ 立即下载 · Windows 版
+            </button>
+            <div class="flex justify-center gap-4 mt-4 text-xs" style="color:#9ca3af;">
+              <span>✓ 无捆绑</span><span>✓ 无广告</span><span>✓ 数字签名</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-8 text-sm" style="color:#9ca3af;">
+        <p>下载即代表同意《用户许可协议》与《隐私政策》 · 软件完全免费，无任何强制捆绑</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-20 px-6">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-12">
+        <div class="section-label">常见问题</div>
+        <h2 class="section-title">你可能想了解</h2>
+      </div>
+
+      <details>
+        <summary>RecOns真的完全免费吗？录制的视频会有水印吗？</summary>
+        <div>是的，RecOns 个人使用完全免费，所有核心功能（包括 2K 录制、画笔标注、中英文 AI
+          字幕识别与导出）都无需付费解锁。我们仅针对需要多语种识别、商业授权的用户提供 Life 生活版本。</div>
+      </details>
+      <details>
+        <summary>录制游戏时会不会卡顿？对电脑配置有要求吗？</summary>
+        <div>RecOns采用 GPU 硬件技术（支持 NVIDIA NVENC、AMD VCE），对游戏性能的影响通常在 5% 以内，主流配置电脑录制 1080P/60fps 完全流畅。2K
+          录制建议配备独立显卡和 8GB 以上内存以获得最佳体验。</div>
+      </details>
+      <details>
+        <summary>可以同时录制系统声音和麦克风声音吗？</summary>
+        <div>可以。RecOns支持独立控制「系统声音」和「麦克风」两个音源通道，可以单独开启或同时开启，并支持音量增益调节。</div>
+      </details>
+      <details>
+        <summary>录制的视频保存在哪里？可以修改保存路径吗？</summary>
+        <div>默认保存在「我的视频\RecOns\录制文件」目录下。您可以在软件设置中自定义保存路径，也可以设置按照日期自动创建子文件夹。所有录制文件会在主界面「视频列表」中显示，可直接预览、编辑字幕或打开所在文件夹。
+        </div>
+      </details>
+      <details>
+        <summary>支持录制哪些平台的内容？可以录制加密/受保护的视频吗？</summary>
+        <div>RecOns可以录制屏幕上显示的几乎所有内容，包括网页视频、游戏画面、软件操作等。但请注意：部分受 DRM
+          版权保护的内容（如部分付费流媒体平台的正版影片）由于系统级加密限制无法录制，请您遵守相关法律法规和平台协议，尊重版权方权益。</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="rounded-3xl p-10 md:p-16 text-center relative overflow-hidden"
+        style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#a855f7 100%);">
+        <!-- 装饰 -->
+        <div class="absolute top-0 left-0 w-64 h-64 rounded-full opacity-20 blur-3xl" style="background:#fff;"></div>
+        <div class="absolute bottom-0 right-0 w-64 h-64 rounded-full opacity-20 blur-3xl" style="background:#fbbf24;">
+        </div>
+
+        <div class="relative">
+          <h2 class="text-3xl md:text-5xl font-black text-white mb-4 leading-tight">
+            立即下载RecOns<br>开始记录你的精彩
+          </h2>
+          <p class="text-lg text-white/80 mb-8 max-w-xl mx-auto">2 千用户的选择 · 基础版免费体验 · Life 生活版 无水印无时长限制</p>
+          <button
+            class="bg-white text-indigo-600 px-10 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 transition hover:-translate-y-1 shadow-2xl inline-flex items-center gap-2 pulse-ring"
+            onclick="startDownload('Windows','最新版 v0.3.1')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+            </svg>
+            免费下载
+          </button>
+          <p class="text-sm text-white/60 mt-4">支持 Windows 7 / 10 / 11 · v0.3.1 · 仅 79MB</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="py-12 px-6 border-t" style="border-color:rgba(99,102,241,0.08);background:#fff;">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2.5 mb-4">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+              style="background:linear-gradient(135deg,#6366f1,#a855f7);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" fill="#fff" />
+                <path d="M10 8l6 4-6 4V8z" fill="#6366f1" />
+              </svg>
+            </div>
+            <span class="text-lg font-bold" style="color:#1e1b4b;">RecOns</span>
+          </div>
+          <p class="text-sm leading-relaxed" style="color:#6b7280;">屏幕录制软件，让每一次录制都清晰、简单、高效。</p>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm mb-4" style="color:#1e1b4b;">产品</h4>
+          <ul class="space-y-2.5 text-sm" style="color:#6b7280;">
+            <li><a href="#features" class="hover:text-indigo-600 transition">功能介绍</a></li>
+            <li><a href="#compare" class="hover:text-indigo-600 transition">版本对比</a></li>
+            <li><a href="#downloads" class="hover:text-indigo-600 transition">下载中心</a></li>
+            <li><a href="#" class="hover:text-indigo-600 transition">更新日志</a></li>
+            <li><a href="#donate" class="hover:text-indigo-600 transition">支持我们</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm mb-4" style="color:#1e1b4b;">支持</h4>
+          <ul class="space-y-2.5 text-sm" style="color:#6b7280;">
+            <li><a href="#faq" class="hover:text-indigo-600 transition">常见问题</a></li>
+            <li><a href="#" class="hover:text-indigo-600 transition">使用教程</a></li>
+            <li><a href="#" class="hover:text-indigo-600 transition">联系客服</a></li>
+            <li><a href="#" class="hover:text-indigo-600 transition">意见反馈</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm mb-4" style="color:#1e1b4b;">关注我们</h4>
+          <div class="flex gap-3">
+            <a href="#" aria-label="抖音"
+              class="w-10 h-10 rounded-xl flex items-center justify-center transition hover:-translate-y-0.5"
+              style="background:rgba(0,0,0,0.06);">
+              <!-- 抖音图标（音符） -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005.8 20.1a6.34 6.34 0 0010.86-4.43V9.04a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1.84-.47z" fill="#161823"/>
+              </svg>
+            </a>
+            <a href="#" aria-label="快手"
+              class="w-10 h-10 rounded-xl flex items-center justify-center transition hover:-translate-y-0.5"
+              style="background:rgba(255,79,63,0.08);">
+              <!-- 快手图标（摄像机） -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M4 6c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-2.5l4 3V8.5l-4 3V8c0-1.1-.9-2-2-2H4z" fill="#FF4F3F"/>
+              </svg>
+            </a>
+            <a href="#" aria-label="微信视频号"
+              class="w-10 h-10 rounded-xl flex items-center justify-center transition hover:-translate-y-0.5"
+              style="background:rgba(7,193,96,0.08);">
+              <!-- 微信视频号图标（摄像机+播放） -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="6" width="14" height="12" rx="2" fill="#07C160"/>
+                <path d="M17 10l4-2v8l-4-2v-4z" fill="#07C160"/>
+                <path d="M9 9.5l4 2.5-4 2.5v-5z" fill="#fff"/>
+              </svg>
+            </a>
+          </div>
+          <p class="text-xs mt-4" style="color:#9ca3af;">客服邮箱：support@ai.recos.cn</p>
+        </div>
+      </div>
+      <div class="pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4 text-sm"
+        style="border-color:rgba(99,102,241,0.08);color:#9ca3af;">
+        <div>© 2021-2026 RecOns 屏幕录制 · JumpOns 团队. All rights reserved.</div>
+        <div> 
+          <a href="https://wenxin.baidu.com" target="_blank" class="hover:text-indigo-600 transition">文心一言提供技术支持</a>
+        </div>
+        <div id="visitCount"></div>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-indigo-600 transition">隐私政策</a>
+          <a href="#" class="hover:text-indigo-600 transition">用户协议</a>
+          <a href="https://beian.miit.gov.cn/" target="_blank" class="hover:text-indigo-600 transition">冀ICP备20012943号</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast 提示 -->
+  <div class="toast" id="toast">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"
+      stroke-linecap="round">
+      <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+      <polyline points="22 4 12 14.01 9 11.01" />
+    </svg>
+    <span id="toastText">下载已开始</span>
+  </div>
+
+  <!-- ====== 二维码支付弹框 ====== -->
+  <div class="qr-mask" id="qrMask" onclick="closeQrMask(event)">
+    <div class="qr-modal" onclick="event.stopPropagation()">
+
+      <!-- 二维码页 -->
+      <div id="qrView">
+        <div class="qr-modal-header">
+          <h3 id="qrTitle">扫码支付</h3>
+          <p class="sub" id="qrSubtitle">请使用手机扫码完成捐赠</p>
+          <button class="qr-close" onclick="closeQrModal()" aria-label="关闭">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div class="qr-tabs">
+          <div class="qr-tab wx active" data-pay="wx" onclick="switchQrTab(this)">
+            <div class="qr-tab-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M8.69 2C4.77 2 1.5 4.66 1.5 8.03c0 1.95 1.1 3.61 2.8 4.77l-.7 2.1 2.45-1.23c.74.15 1.42.29 2.2.29.18 0 .35-.01.52-.02-.11-.38-.17-.77-.17-1.18 0-2.94 2.79-5.33 6.25-5.33.19 0 .38.01.57.04C14.78 4.22 12.03 2 8.69 2zM6.29 4.87c.5 0 .87.37.87.87a.87.87 0 0 1-.87.87.87.87 0 0 1-.87-.87c0-.5.37-.87.87-.87zm4.7 0c.5 0 .87.37.87.87a.87.87 0 0 1-.87.87.87.87 0 0 1-.87-.87c0-.5.37-.87.87-.87zM15 9c-3.31 0-6 2.46-6 5.5 0 1.78 1.01 3.36 2.58 4.36l-.64 1.9 2.26-1.12c.6.14 1.17.27 1.8.32.38 4.03 3.79 7.04 7.5 7.04.77 0 1.5-.12 2.2-.3l1.8.92-.5-1.54c1.46-.96 2.5-2.52 2.5-4.33C22 11.7 18.86 9 15 9zm-2.3 2.54c.4 0 .7.3.7.7s-.3.7-.7.7-.7-.3-.7-.7.3-.7.7-.7zm4.6 0c.4 0 .7.3.7.7s-.3.7-.7.7-.7-.3-.7-.7.3-.7.7-.7z"/>
+              </svg>
+            </div>
+            <span class="qr-tab-name">微信</span>
+          </div>
+          <div class="qr-tab zfb" data-pay="zfb" onclick="switchQrTab(this)">
+            <div class="qr-tab-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M20.5 15.5c-1.8-1-4.4-2.6-7.2-4.4.7-1.3 1.3-2.8 1.7-4.3h-4V5.5H15V4.7h-3.5V3h-1.5v1.7H6.5v.8h3.5v1.3H7.2v.8h6.6c-.3 1-.7 2-1.2 2.9-2.8-.9-5.8-1.6-7.6-1-1.2.4-2 1.1-2.4 1.9-.9 1.8.1 4.2 3 4.2 1.8 0 3.7-.9 5.2-2.3 2.2 1.1 4.5 2.4 6.5 3.7-1.3 1.3-5 4.1-12 4.1v1h17v-1c-.7-.1-1.2-.7-1.8-1.3zM6.3 14.6c-2 .2-2.7-1.1-2.7-1.7 0-.7.7-1.4 1.6-1.6.9-.2 2.4.1 4.4.7-.9 1.2-2.1 2.5-3.3 2.6z"/>
+              </svg>
+            </div>
+            <span class="qr-tab-name">支付宝</span>
+          </div>
+          <div class="qr-tab ysf" data-pay="ysf" onclick="switchQrTab(this)">
+            <div class="qr-tab-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-.8 12.7l-1.2-1.3-2.5 2.8-1.4-1.3L8.6 12 6 9.5l1.4-1.3L9 10l1-1.1c-.6-.8-.9-1.7-.9-2.6 0-2 1.6-3.5 3.7-3.5 1.3 0 2.4.5 3.3 1.3l-1.4 1.4c-.6-.5-1.3-.9-2-.9-1.2 0-2.1.8-2.1 2 0 1.1.9 1.9 2.1 1.9.5 0 1-.2 1.3-.4l1.3 1.3c-.6.5-1.5.9-2.5 1l1.5 1.5-1.1 1.2-1.5-1.5-2.3 2.4zM15 7.2l-1.3 1.3c.5.4.9 1 1.1 1.6l1.4-1.4c-.3-.5-.7-1-1.2-1.5zm1.3 2.8c.1.3.2.6.2 1 0 2-1.6 3.6-3.8 3.6-.6 0-1.2-.1-1.7-.4l-.8.9-1.1-1.1.8-.8c-.6-.6-.9-1.4-.9-2.3 0-.4 0-.7.1-1h-1.6v-1.5h2.1V7h1.5v1.4h2v1.5h-.7z"/>
+              </svg>
+            </div>
+            <span class="qr-tab-name">云闪付</span>
+          </div>
+        </div>
+
+        <div class="qr-code-panel">
+          <div class="qr-code-wrap">
+            <div class="qr-code-card wx-card" id="qrCodeCard">
+              <!-- 真实二维码图片（微信赞赏码 + 支付宝收款码） -->
+              <div class="qr-real-img-wrap" id="qrRealWrap" style="display:block;">
+                <img class="qr-real-img wx-img" id="qrRealImg" src="./img/mm_reward_qrcode_1791170421451.png" alt="收款码"/>
+              </div>
+              <!-- 云闪付 CSS 伪二维码 -->
+              <div class="qr-fake-grid" id="qrFakeGrid"></div>
+              <div class="qr-corner tl" id="cTL"></div>
+              <div class="qr-corner tr" id="cTR"></div>
+              <div class="qr-corner bl" id="cBL"></div>
+              <div class="qr-center-logo ysf-logo" id="qrCenterLogo">
+                <svg viewBox="0 0 1024 1024" fill="currentColor"><path d="M842 180H182c-45 0-82 37-82 82v498c0 45 37 82 82 82h660c45 0 82-37 82-82V262c0-45-37-82-82-82zM499 674c-91 0-165-63-165-166s74-165 165-165c51 0 91 20 122 52l-49 47c-21-20-47-33-73-33-54 0-95 42-95 99s41 99 95 99c31 0 54-12 71-29v-47h-74v-55h133v133c-28 33-70 65-130 65zm289-39h-82V453h-55v182h-82v59h219v-59z"/></svg>
+              </div>
+              <div class="qr-scan-line"></div>
+            </div>
+          </div>
+          <div class="qr-amount-text wx-c" id="qrAmountText">¥18.00</div>
+          <div class="qr-tip-text" id="qrTipText">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v4l3 2"/></svg>
+            打开手机 <span id="qrAppName">微信</span> 扫一扫
+          </div>
+          <button class="qr-confirm-btn wx-btn" id="qrConfirmBtn" onclick="confirmPaid()">
+            我已完成支付
+          </button>
+        </div>
+      </div>
+
+      <!-- 支付成功页 -->
+      <div class="qr-success" id="qrSuccess">
+        <div class="qr-check-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h4>支付成功 🎉</h4>
+        <div class="s-amount" id="sAmount">¥18.00</div>
+        <p class="s-msg">
+          感谢您对 RecOns 开源项目的支持！<br>
+          您的每一份捐赠，都会用于服务器、数字签名证书与新功能开发。<br>
+          愿开源的路上，我们一起走得更远 ❤️
+        </p>
+        <button class="qr-success-close" onclick="closeQrModal()">好的，关闭</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // staggered reveal
+    document.querySelectorAll('.stagger-item').forEach((el, i) => {
+      el.style.animationDelay = (0.05 * (i + 1)) + 's';
+    });
+
+    // 下载交互
+    let downloading = false;
+    let downloadingCount = -1;
+    let paySuccessCount = -1;
+    // let loadingCount = 0;
+    function handlePlatformBtn(btn, platform, version) {
+      if (btn.dataset.state === 'loading' || btn.dataset.state === 'success') return;
+      btn.dataset.state = 'loading';
+      btn.setAttribute('aria-busy', 'true');
+      const origText = btn.textContent;
+      btn.dataset.orig = origText;
+      btn.textContent = '正在准备下载...';
+      // 同步触发 toast 元素状态
+      showToast(platform + ' 版 ' + version + ' 下载已开始，请稍候...');
+      downloadingCount++;
+      setTimeout(() => {
+        btn.dataset.state = 'success';
+        btn.setAttribute('aria-busy', 'false');
+        btn.textContent = '✓ 下载已开始';
+        setTimeout(() => {
+          btn.textContent = origText;
+          btn.dataset.state = '';
+        }, 2000);
+      }, 1200);
+    }
+    function startDownload(platform, version) {
+      if (downloading) return;
+      downloading = true;
+
+      // 找到触发按钮并显示加载状态
+      const btn = event?.currentTarget;
+      const originalHTML = btn?.innerHTML;
+      if (btn) {
+        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="animation:spin 1s linear infinite;"><path d="M21 12a9 9 0 11-6.2-8.55"/></svg> 正在准备下载...';
+        btn.style.opacity = '0.85';
+      }
+
+      // 添加旋转动画
+      const style = document.createElement('style');
+      style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+      document.head.appendChild(style);
+
+      setTimeout(() => {
+        if (btn) {
+          btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> 时间不等人';
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.opacity = '1';
+            downloading = false;
+          }, 2000);
+        } else {
+          downloading = false;
+        }
+        // showToast(platform + ' 版 ' + version + ' 下载已开始，请稍候...');
+        showToast(platform + ' 版 ' + version + ' 作者还在开发中，预计2027年4月1日发布');
+      }, 1200);
+      // 计算下载次数，以便后续使用
+      downloadingCount++;
+      // 更新技术支持次数 在techSupport 后面新建标签元素添加 访问量：${downloadingCount / 4} 余次`;
+      let visitCount = document.getElementById('visitCount');
+      if (visitCount) {
+        visitCount.innerHTML = `访问量：${downloadingCount / 4} 余次`;
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      if (msg.includes('感谢您的支持！')) {
+        msg += "版本正在开发，作者推荐其他录屏软件，正在跳转到页面...";
+        setTimeout(() => {
+          window.location.href = 'https://www.kklxj.com/pay.php';
+        }, 3500);
+      }
+      document.getElementById('toastText').textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    // 平滑滚动后高亮
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const id = a.getAttribute('href');
+        if (id.length > 1) {
+          const target = document.querySelector(id);
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      });
+    });
+
+    // FAQ details 交互反馈
+    document.querySelectorAll('details').forEach(d => {
+      const s = d.querySelector('summary');
+      if (s) {
+        s.setAttribute('aria-expanded', 'false');
+        s.setAttribute('role', 'button');
+        d.addEventListener('toggle', () => {
+          s.setAttribute('aria-expanded', d.open ? 'true' : 'false');
+        });
+      }
+    });
+
+    // ====== 捐赠模块交互 ======
+    let currentAmount = 18;
+    let currentMethod = 'wechat';
+
+    function selectAmount(btn, amount) {
+      document.querySelectorAll('.donate-amount').forEach(b => {
+        b.style.cssText = 'background:#fff;color:#6b7280;border:1.5px solid #e5e7eb;box-shadow:none;';
+        b.classList.remove('ring-2', 'ring-offset-2');
+      });
+      btn.style.cssText = 'background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;border:1.5px solid transparent;box-shadow:0 4px 12px rgba(99,102,241,0.3);';
+      btn.classList.add('ring-2', 'ring-offset-2');
+      currentAmount = amount;
+      const wrap = document.getElementById('customAmountWrap');
+      if (amount === 'custom') {
+        wrap.classList.remove('hidden');
+        document.getElementById('donateBtnText').textContent = '感谢支持（自定义金额）';
+        const inp = document.getElementById('customAmountInput');
+        inp.focus();
+        inp.addEventListener('input', () => {
+          const v = parseInt(inp.value) || 0;
+          document.getElementById('donateBtnText').textContent = v > 0 ? `感谢支持 ¥${v}` : '感谢支持（自定义金额）';
+        });
+      } else {
+        wrap.classList.add('hidden');
+        document.getElementById('donateBtnText').textContent = `感谢支持 ¥${amount}`;
+      }
+    }
+
+    function selectMethod(btn, method) {
+      document.querySelectorAll('.donate-method').forEach(b => {
+        b.style.cssText = 'background:#fff;color:#6b7280;border:1.5px solid #e5e7eb;box-shadow:none;';
+        b.classList.remove('ring-2', 'ring-offset-2');
+      });
+      // 统一为 wx / zfb / ysf key，与二维码弹框一致
+      const keyMap = { wechat:'wx', alipay:'zfb', unionpay:'ysf' };
+      const stdKey = keyMap[method] || method;
+      const colors = { wx: '#07c160', zfb: '#1677ff', ysf: '#e21836' };
+      const c = colors[stdKey];
+      btn.style.cssText = `background:#fff;color:${c};border:1.5px solid ${c};box-shadow:0 4px 12px ${c}33;`;
+      btn.classList.add('ring-2', 'ring-offset-2');
+      currentMethod = stdKey;
+    }
+
+    function submitDonate() {
+      let amount = currentAmount;
+      if (amount === 'custom') {
+        const v = parseInt(document.getElementById('customAmountInput').value);
+        if (!v || v < 1) { showToast('请输入有效的捐赠金额'); return; }
+        amount = v;
+      }
+      // 打开二维码弹框，使用当前选择的支付方式
+      openQrModal(amount, currentMethod);
+    }
+
+    // ====== 二维码弹框交互 ======
+    let qrCurrentPay = 'wx';
+    let qrCurrentAmount = 18;
+
+    // 真实收款码图片地址配置
+    const QR_IMG = {
+      wx:  'https://aisearch.cdn.bcebos.com/fileAsset/YlTUNm2eoyB9jRhVWvtFAQ/1791170595548DZrhGS.png?authorization=bce-auth-v1%2F7e22d8caf5af46cc9310f1e3021709f3%2F2026-10-05T03%3A23%3A15Z%2F86400%2Fhost%2F50d86a9d7d990091a2df1cbbb6346c325d7241ebbf44a8310d0d4a15fe028887',
+      zfb: 'https://aisearch.cdn.bcebos.com/fileAsset/YlTUNm2eoyB9jRhVWvtFAQ/1791173958295NIdZxt.png?authorization=bce-auth-v1%2F7e22d8caf5af46cc9310f1e3021709f3%2F2026-10-05T04%3A19%3A17Z%2F86400%2Fhost%2F70919a7d6bde5966d98f58743ec2b68cef003d4543e9cd3fe75a46ffab6e6d43'
+    };
+
+    const qrPayMap = {
+      wx:  { card: 'wx-card',  btn: 'wx-btn',  amountC: 'wx-c',  name: '微信',     type:'img',  img:QR_IMG.wx,  imgCls:'wx-img'  },
+      zfb: { card: 'zfb-card', btn: 'zfb-btn', amountC: 'zfb-c', name: '支付宝',   type:'img',  img:QR_IMG.zfb, imgCls:'zfb-img' },
+      ysf: { card: 'ysf-card', btn: 'ysf-btn', amountC: 'ysf-c', name: '云闪付',   type:'fake', seed: 91       }
+    };
+
+    // 生成 25x25 伪二维码网格
+    function genFakeQR(seed) {
+      const grid = document.getElementById('qrFakeGrid');
+      grid.innerHTML = '';
+      const SIZE = 25;
+      const isBlock = (r,c) => (r<7&&c<7)||(r<7&&c>=SIZE-7)||(r>=SIZE-7&&c<7);
+      const isCenter = (r,c) => r>=10&&r<=14&&c>=10&&c<=14;
+      let s = seed;
+      const rand = () => { s = (s*9301+49297)%233280; return s/233280; };
+      for(let r=0;r<SIZE;r++){
+        for(let c=0;c<SIZE;c++){
+          const cell = document.createElement('div');
+          cell.className = 'qr-fake-cell';
+          if(!isBlock(r,c)&&!isCenter(r,c)&&rand()>0.52){
+            cell.classList.add('b');
+          }
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function openQrModal(amount, method) {
+      qrCurrentAmount = amount;
+      qrCurrentPay = method;
+      // document.querySelectorAll('.qr-tab').forEach(t => t.classList.remove('active'));
+      const targetTab = document.querySelector(`.qr-tab[data-pay="${method}"]`);
+      if (targetTab) targetTab.classList.add('active');
+      applyQrStyle();
+      document.getElementById('qrView').style.display = 'block';
+      document.getElementById('qrSuccess').classList.remove('show');
+      document.getElementById('qrMask').classList.add('active');
+      document.body.classList.add('qr-open');
+    }
+
+    function applyQrStyle() {
+      const cfg = qrPayMap[qrCurrentPay];
+      // 找不到配置，直接隐藏弹框
+      if (cfg == undefined){
+        return;
+      }
+      const card = document.getElementById('qrCodeCard');
+      card.className = 'qr-code-card ' + cfg.card;
+      const btn = document.getElementById('qrConfirmBtn');
+      btn.className = 'qr-confirm-btn ' + cfg.btn;
+      btn.textContent = '我已完成支付';
+      btn.disabled = false;
+      const amt = document.getElementById('qrAmountText');
+      amt.className = 'qr-amount-text ' + cfg.amountC;
+      amt.textContent = '¥' + qrCurrentAmount.toFixed(2);
+      document.getElementById('qrAppName').textContent = cfg.name;
+      document.getElementById('sAmount').textContent = '¥' + qrCurrentAmount.toFixed(2);
+
+      // 根据类型切换真图/伪码显示
+      const wrap = document.getElementById('qrRealWrap');
+      const img = document.getElementById('qrRealImg');
+      const grid = document.getElementById('qrFakeGrid');
+      const cTL = document.getElementById('cTL');
+      const cTR = document.getElementById('cTR');
+      const cBL = document.getElementById('cBL');
+      const logo = document.getElementById('qrCenterLogo');
+
+      if (cfg.type === 'img') {
+        // 真实二维码：显示图片（带放大裁剪），隐藏伪码元素
+        img.src = cfg.img;
+        img.className = 'qr-real-img ' + (cfg.imgCls || '');
+        wrap.style.display = 'block';
+        grid.classList.remove('show');
+        cTL.classList.remove('show');
+        cTR.classList.remove('show');
+        cBL.classList.remove('show');
+        logo.classList.remove('show');
+      } else {
+        // CSS伪二维码：显示网格+定位角+中央logo，隐藏图片
+        wrap.style.display = 'none';
+        grid.classList.add('show');
+        cTL.classList.add('show');
+        cTR.classList.add('show');
+        cBL.classList.add('show');
+        logo.classList.add('show');
+        genFakeQR(cfg.seed);
+      }
+    }
+
+    function switchQrTab(el) {
+      document.querySelectorAll('.qr-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      qrCurrentPay = el.dataset.pay;
+      applyQrStyle();
+    }
+
+    function closeQrModal() {
+      document.getElementById('qrMask').classList.remove('active');
+      document.body.classList.remove('qr-open');
+      // 重置到二维码视图
+      setTimeout(() => {
+        document.getElementById('qrView').style.display = 'block';
+        document.getElementById('qrSuccess').classList.remove('show');
+      }, 300);
+    }
+
+    function closeQrMask(e) {
+      if (e.target.id === 'qrMask') closeQrModal();
+    }
+
+    function confirmPaid() {
+      // const btn = document.getElementById('qrConfirmBtn');
+      // btn.disabled = true;
+      // btn.textContent = '确认中...';
+      closeQrModal();
+      setTimeout(() => {
+        document.getElementById('qrView').style.display = 'none';
+        document.getElementById('qrSuccess').classList.add('show');
+        let methodName = { wx: '微信支付', zfb: '支付宝', ysf: '云闪付' }[qrCurrentPay];
+        if (methodName == undefined) {
+          methodName = '微信支付';
+        }
+        // ¥${qrCurrentAmount}
+        showToast(`感谢您通过${methodName}捐赠 ，您的支持是我们最大的动力！❤️`);
+      }, 700);
+      // 计算支付成功次数，以便后续使用
+      paySuccessCount++;
+      visitCount = paySuccessCount + downloadingCount / 4;
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQrModal(); });
+  </script>
+
+</body>
+
+</html>
+<!--13244715272395614730093016--><!--13476992292395614730093016--><!--13833958642395614730093016--><!--13974560292573747210093016--><!--14063691422395614730093016--><!--14253340682573747210093016--><!--14732982502573747210093016--><!--15265135262395614730093016--><!--15406398022395614730093016--><!--15893939302395614730093016--><!--16364538892573747210093016--><!--26157625642573747210100110--><!--26259566492573747210100110--><!--26517854212573747210100110--><!--28543295742573747210100110--><!--28944862162573747210100110--><!--29350400062395614730100110--><!--29534525212573747210100110--><!--03265980072573747210100111--><!--03396985812395614730100111--><!--03519956772395614730100111--><!--16916360032395614730100112--><!--27460446952573747210100216--><!--27572448962395614730100216--><!--27634777332395614730100216--><!--27733156572573747210100216--><!--27815943242395614730100216--><!--27930876512573747210100216--><!--27991619422573747210100216--><!--28079025252573747210100216--><!--28137275272395614730100216--><!--28448522292395614730100216--><!--28519172282573747210100216--><!--28591821292573747210100216--><!--05073184382573747210100217--><!--05168388782573747210100217--><!--05418886622573747210100217--><!--01729120442395614730100511--><!--02439979612573747210100511--><!--02929405422573747210100511--><!--03071995242395614730100511--><!--15715577842573747210100511--><!--15830938342573747210100511--><!--15966276912395614730100511--><!--16226953182573747210100511--><!--16306550972395614730100511--><!--16360769222573747210100511--><!--16937598032573747210100511--><!--15446448422395614730100512--><!--15625075052395614730100512--><!--16135101022573747210100512--><!--20732105502573747210100512--><!--21058979792395614730100512--><!--21325889552573747210100512--><!--21564878422573747210100512--><!--22061678212573747210100512-->
