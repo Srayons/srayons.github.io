@@ -148,3 +148,5 @@ npx javascript-obfuscator src/app.js --output dist/app.js
 
 但**纯 HTML/CSS 的视觉效果无法真正隐藏**——别人照着截图也能复刻。
 把精力放在内容与产品本身，比对抗抄袭更划算。
+
+文章转载 百度文心一言
