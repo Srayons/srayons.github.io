@@ -2753,8 +2753,7 @@
             <div class="qr-code-card wx-card" id="qrCodeCard">
               <!-- 真实二维码图片（微信赞赏码 + 支付宝收款码） -->
               <div class="qr-real-img-wrap" id="qrRealWrap" style="display:block;">
-                <img class="qr-real-img wx-img" id="qrRealImg" src="./img/mm_reward_qrcode_1791170421451.png"
-                  alt="收款码" />
+                <img class="qr-real-img wx-img" id="qrRealImg" src="./img/qr-wx.png" alt="收款码" />
               </div>
               <!-- 云闪付 CSS 伪二维码 -->
               <div class="qr-fake-grid" id="qrFakeGrid"></div>
@@ -2985,8 +2984,8 @@
     // };
 
     const QR_IMG = {
-      wx: 'https://srayons.github.io/img/qr-wx.png',
-      zfb: 'https://srayons.github.io/img/qr-zfb.png',
+      wx: './img/qr-wx.png',
+      zfb: './img/qr-zfb.png',
     }
 
     const qrPayMap = {
@@ -3019,9 +3018,16 @@
     function openQrModal(amount, method) {
       qrCurrentAmount = amount;
       qrCurrentPay = method;
-      // document.querySelectorAll('.qr-tab').forEach(t => t.classList.remove('active'));
+
+      // 选择的支付方式，存在则添加 active 类样式
       const targetTab = document.querySelector(`.qr-tab[data-pay="${method}"]`);
-      if (targetTab) targetTab.classList.add('active');
+      if (targetTab) {
+        document.querySelectorAll('.qr-tab').forEach(t => t.classList.remove('active'));
+        targetTab.classList.add('active');
+        // document.querySelectorAll('.qr-tab').forEach(t => {
+        //   t.classList.remove('active');
+        // });
+      }
       applyQrStyle();
       document.getElementById('qrView').style.display = 'block';
       document.getElementById('qrSuccess').classList.remove('show');
@@ -3096,7 +3102,9 @@
     }
 
     function closeQrMask(e) {
-      if (e.target.id === 'qrMask') closeQrModal();
+      if (e.target.id === 'qrMask') {
+        closeQrModal();
+      }
     }
 
     function confirmPaid() {
